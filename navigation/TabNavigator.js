@@ -7,6 +7,7 @@ import ProfileScreen from "../screens/profile/ProfileScreen";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SearchScreen from "../screens/search/SearchScreen";
 import HomeScreen from "../screens/home/HomeScreen";
+import {Header} from "@react-navigation/stack";
 
 
 const Tab = createBottomTabNavigator();
@@ -15,6 +16,8 @@ export default function TabNavigator() {
     return (
         <NavigationContainer>
             <Tab.Navigator
+
+
                 screenOptions={({route}) => ({
                     tabBarIcon: ({ color, size}) => {
                         let iconName;
