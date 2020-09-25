@@ -1,17 +1,39 @@
 import * as React from 'react';
-import {Text, View} from "react-native";
+import {Dimensions, Text, View} from "react-native";
 import {Component} from "react";
+import StockBoard from "./StockBoard";
+import AppHeader from "../../navigation/AppHeader";
 
-export default class SearchScreen extends Component{
+export default class SearchScreen extends Component {
 
 
-    render(){
-        return(
+    render() {
+        const screenHeight = Dimensions.get('window').height;
+
+        return (
+
             <View>
-                <Text> This is the Search Screen!</Text>
+
+                <AppHeader/>
+                <View style={styles.container}>
+
+
+                    <StockBoard/>
+                </View>
             </View>
+
         );
     };
+
+
+};
+
+const styles = {
+    container: {
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
 
 
 };
