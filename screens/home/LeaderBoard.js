@@ -2,7 +2,7 @@ import * as React from "react";
 import { StyleSheet, Text, View, SafeAreaView, ScrollView } from "react-native";
 import LeaderBoardRow from "./LeaderBoardRow.js";
 
-export default class HomeScreen extends React.Component {
+export default class Leaderboard extends React.Component {
   render() {
     return (
       <SafeAreaView style={[styles.container]}>
@@ -34,9 +34,9 @@ const styles = StyleSheet.create({
   container: {
     marginLeft: "5%",
     marginRight: "5%",
-    marginTop: "80%",
-    marginBottom: "30%",
     justifyContent: "center",
+    marginVertical: "60%",
+    // marginBottom: "10%",
     alignContent: "center",
   },
   textStyling: {

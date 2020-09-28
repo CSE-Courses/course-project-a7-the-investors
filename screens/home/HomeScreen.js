@@ -1,9 +1,15 @@
 import * as React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import LeaderBoard from "./LeaderBoard.js";
+import DisplayCash from "./DisplayCash.js";
 
 export default class HomeScreen extends React.Component {
   render() {
-    return <LeaderBoard />;
+    return (
+      <View>
+        <DisplayCash />
+        <LeaderBoard />
+      </View>
+    );
   }
 }
