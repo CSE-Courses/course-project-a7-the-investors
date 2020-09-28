@@ -7,9 +7,9 @@ export default class StockRow extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text> Tickr </Text>
-                <Text> Tickr </Text>
-                <Text> Tickr </Text>
+                <Text style={styles.textStyling}> Tickr </Text>
+                <Text style={styles.textStyling}> +3.4% </Text>
+                <Text style={styles.textStyling}> $34.23 </Text>
             </View>
         );
     }
@@ -25,7 +25,12 @@ const styles = {
         borderBottomWidth: 1,
         borderColor: 'black',
         width: '95%',
-        alignSelf: 'center'
+        alignSelf: 'center',
+        height: 45,
+        marginTop: 8
     },
+    textStyling: {
+        fontSize: 20
+    }
 
 };

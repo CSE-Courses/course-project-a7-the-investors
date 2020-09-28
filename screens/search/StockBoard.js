@@ -12,27 +12,56 @@ export default class StockBoard extends Component {
         return (
             <View style={[styles.container, {height: screenHeight * .6}]}>
                 <View style={styles.headers}>
-                    <Text> Name</Text>
-                    <Text> Change</Text>
-                    <Text> Price</Text>
+                    <View>
+                        <Text> Name</Text>
+                    </View>
+                    <View>
+                        <Text> Change</Text>
+                    </View>
+                    <View>
+                        <Text> Price</Text>
+                    </View>
+
                 </View>
-                <View style={[styles.board, {height: screenHeight * .57}]}>
-                    <ScrollView>
-                        <StockRow/>
-                        <StockRow/>
-                        <StockRow/>
-                        <StockRow/>
-                        <StockRow/>
-                        <StockRow/>
-                        <StockRow/>
-                        <StockRow/>
-                        <StockRow/>
-                        <StockRow/>
-                        <StockRow/>
-                        <StockRow/>
-                    </ScrollView>
+                <View style={styles.boardContainer}>
 
 
+
+                    <View style={[styles.board, {height: screenHeight * .57}]}>
+                        <ScrollView>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                            <StockRow/>
+                        </ScrollView>
+                    </View>
+                </View>
+                <View>
+                    <View style={styles.cashContainer}>
+                        <View>
+                            <Text style={styles.cashLabel}>Cash:</Text>
+
+                        </View>
+                        <View>
+                            <Text style={styles.cashValue}> $15,235.53</Text>
+                        </View>
+                    </View>
                 </View>
             </View>
         );
@@ -42,13 +71,14 @@ export default class StockBoard extends Component {
 };
 
 const styles = {
-    container: {
-        width: '90%',
+
+    boardContainer: {
+        marginTop: 20,
+        alignItems: 'center',
 
 
     },
     board: {
-        width: "90%",
         borderWidth: 1,
         borderRadius: 3,
         borderColor: 'black',
@@ -59,18 +89,30 @@ const styles = {
             height: 2,
         },
         shadowOpacity: 0.20,
-        shadowRadius: 1.41,
-
+        shadowRadius: 1.3,
         elevation: 2,
-
-
     },
+
     headers: {
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: '90%',
-        paddingRight: 4
+        paddingRight: 25,
+        paddingLeft: 8
+    },
+    cashContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        width: '75%',
+        alignItems: 'center',
+        alignSelf: 'center',
+        marginTop: 15
+    },
+    cashLabel: {
+        fontsize: 16
+    },
+    cashValue: {
+        fontSize: 43
     }
 
 };

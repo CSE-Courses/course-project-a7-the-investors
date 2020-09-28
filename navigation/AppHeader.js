@@ -1,6 +1,7 @@
-import {Appbar} from "react-native-paper";
+import {Appbar,Text} from "react-native-paper";
 import * as React from "react";
 import {Component} from "react";
+
 
 export default class AppHeader extends Component {
 
@@ -9,9 +10,11 @@ export default class AppHeader extends Component {
 
         return (
 
-            <Appbar.Header>
-                <Appbar.Content title="Global" />
-
+            <Appbar.Header style={style.appBar}>
+                <Appbar.Content
+                    title={<Text>Global</Text>}
+                    style={{ alignItems: 'center' }}
+                />
             </Appbar.Header>
         )
             ;
@@ -20,9 +23,7 @@ export default class AppHeader extends Component {
 };
 
 const style = {
-    appbar: {
-        flex: 1,
-        flexDirection: 'row',
-        alignContent: 'center'
+    appBar: {
+        backgroundColor: 'tomato'
     }
 }
