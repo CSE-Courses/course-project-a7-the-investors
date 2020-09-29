@@ -1,16 +1,42 @@
-import * as React from 'react';
-import {Text, View} from "react-native";
 
+import * as React from "react";
+import { Dimensions, Text, View, TextInput } from "react-native";
+import { Component } from "react";
+import AppHeader from "../../navigation/AppHeader";
+import PortfolioStockBoard from "./PortfolioStockBoard";
 
-export default class PortfolioScreen extends React.Component {
-
+export default class PortfolioScreen extends Component {
     render() {
-        return(
-            <View>
-                <Text> This is the Portfolio Screen!</Text>
+        return (
+            <View style={styles.container}>
+                <AppHeader />
+
+                <View style={styles.content}>
+                    <PortfolioStockBoard />
+                </View>
             </View>
         );
     }
+}
 
-
+const styles = {
+    container: {
+        flex: 1,
+        flexDirection: "column",
+    },
+    content: {
+        flex: 1,
+        flexDirection: "column",
+        alignItems: "center",
+    },
+    cashContainer: {
+        flex: 1,
+        flexDirection: "column",
+        justifyContent: "center",
+        alignContent: "center",
+    },
+    cashHeader: {
+        flex: 1,
+        flexDirection: "row",
+    },
 };
