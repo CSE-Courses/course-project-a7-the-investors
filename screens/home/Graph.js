@@ -5,7 +5,7 @@ export default class Graph extends React.Component {
   render() {
     return (
       <View>
-        <Image style={styles.image} source={require("./DemoGraph.png")}></Image>
+        <Image style={styles.image} source={require("./DemoGraph.jpg")}></Image>
       </View>
     );
   }
