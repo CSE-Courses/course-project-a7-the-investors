@@ -121,12 +121,12 @@ export default class App extends React.Component {
                         style={styles.textInput}
                         autoCapitalize="none"
 
-                    /><TouchableOpacity onPress={() => Alert.alert('Simple Button pressed')}
+                    /><TouchableOpacity onPress={() => Alert.alert('Try hard look deep into your memory')}
                                         style={styles.buttonForgot}>
                     <Text style={styles.forgotPass}>Forgot Password?</Text>
                 </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => Alert.alert('Simple Button pressed')}
+                    <TouchableOpacity onPress={() => this._setLogin()}
                                       style={styles.buttonSign}>
                         <Text style={styles.buttonWords}>Sign In</Text>
                     </TouchableOpacity>

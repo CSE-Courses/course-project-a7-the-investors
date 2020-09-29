@@ -11,7 +11,7 @@ export default class StockSearch extends Component {
 
         return (
             <View style={styles.container}>
-                <TextInput style={styles.input} defaultValue={"Search"}>  </TextInput>
+                <TextInput style={styles.input}   defaultValue= "  Search" >  </TextInput>
             </View>
         )
     }
@@ -31,7 +31,8 @@ const styles = StyleSheet.create({
         height: 25,
         borderRadius:34,
         borderTopLeftRadius: 34,
-        borderTopRightRadius: 34
+        borderTopRightRadius: 34,
+        
 
     }
 
