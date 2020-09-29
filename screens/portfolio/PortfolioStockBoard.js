@@ -116,7 +116,7 @@ const styles = {
         marginTop: 15
     },
     cashLabel: {
-        fontsize: 16
+        fontSize: 16
     },
     cashValue: {
         fontSize: 43
