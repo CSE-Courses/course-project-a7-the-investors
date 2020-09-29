@@ -8,9 +8,9 @@ export default class HomeScreen extends React.Component {
   render() {
     return (
       <View>
-        {/* <DisplayCash /> */}
-        {/* <Graph /> */}
-        {/* <LeaderBoard /> */}
+        <DisplayCash />
+        <Graph />
+        <LeaderBoard />
       </View>
     );
   }

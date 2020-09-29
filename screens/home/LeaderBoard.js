@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     marginLeft: "5%",
     marginRight: "5%",
     justifyContent: "center",
-    marginVertical: "60%",
+    marginVertical: "10%",
     // marginBottom: "10%",
     alignContent: "center",
   },
