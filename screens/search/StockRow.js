@@ -3,13 +3,16 @@ import {Text, View} from "react-native";
 import {Component} from "react";
 
 export default class StockRow extends Component {
+    constructor(props) {
+        super(props);
+    }
 
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.textStyling}> Tickr </Text>
+                <Text style={styles.textStyling}> {this.props.stockName} </Text>
                 <Text style={styles.textStyling}> +3.4% </Text>
-                <Text style={styles.textStyling}> $34.23 </Text>
+                <Text style={styles.textStyling}> ${this.props.stockCost} </Text>
             </View>
         );
     }
