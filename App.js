@@ -21,19 +21,23 @@ export default class App extends React.Component {
 
     };
     state = {
-        renderReg: true,
-        renderLogin: false,
+        //renderLogin state starts as true
+        renderLogin: true,
+        renderReg: false,
         renderTab: false,
     }
 
     _setReg(){
-        this.setState({renderReg: false, renderLogin: true})
+        this.setState({renderReg: true, renderLogin: false, renderTab: false})
     }
 
     _setLogin(){
-        this.setState({renderTab: true, renderLogin: false})
+        this.setState({renderTab: false, renderLogin: true, renderReg: false})
     }
 
+    _switchToTabs(){
+        this.setState({renderTab: true, renderLogin: false, renderReg: false})
+    }
 
 
     _renderRegistration() {
@@ -82,13 +86,17 @@ export default class App extends React.Component {
                         //onChangeText={(val) => setPasswordAttempt2(val)}
                     />
 
-                    <TouchableOpacity style={styles.touchableButton}>
+                    <TouchableOpacity style={styles.touchableButton} onPress={() => this._switchToTabs()}>
                         <Text style={styles.touchableText}> Sign Up </Text>
-                        {/*onPress={()=> add to database and go to home?*/}
+                        {/* add account to database */}
+
+
+
+
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.touchable}
-                                      onPress={() => this._setReg()}>
+                                      onPress={() => this._setLogin()}>
                         <Text style={styles.loginText}> Already signed up? Login </Text>
 
                     </TouchableOpacity>
@@ -126,7 +134,7 @@ export default class App extends React.Component {
                     <Text style={styles.forgotPass}>Forgot Password?</Text>
                 </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => Alert.alert('Simple Button pressed')}
+                    <TouchableOpacity onPress={() => this._switchToTabs()}
                                       style={styles.buttonSign}>
                         <Text style={styles.buttonWords}>Sign In</Text>
                     </TouchableOpacity>
@@ -141,7 +149,7 @@ export default class App extends React.Component {
                     }}>Or</Text>
 
                     <TouchableOpacity onPress={() => {
-                        this._setLogin();
+                        this._setReg();
                     }}
                                       style={styles.buttonSign}>
                         <Text style={styles.buttonWords}>Register</Text>
@@ -158,11 +166,11 @@ export default class App extends React.Component {
 
 
     render(){
-        if (this.state.renderReg) {
-            return (this._renderRegistration());
-
-        }else if (this.state.renderLogin) {
+        //initialize app on login page
+        if (this.state.renderLogin) {
             return (this._renderLogin());
+        }else if(this.state.renderReg) {
+            return (this._renderRegistration());
         }else {
             return(<TabNavigator/>)
         }
