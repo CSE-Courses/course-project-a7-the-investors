@@ -3,6 +3,8 @@ import {Dimensions, Text, View, StyleSheet,TextInput} from "react-native";
 import {Component} from "react";
 import StockBoard from "./StockBoard";
 import AppHeader from "../../navigation/AppHeader";
+import * as SecureStore from 'expo-secure-store';
+
 
 export default class StockSearch extends Component {
 

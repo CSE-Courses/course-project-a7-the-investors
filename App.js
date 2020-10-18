@@ -1,171 +1,67 @@
 import * as React from 'react';
-import {Alert, Dimensions, Image, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import StackNavigator from "@react-navigation/stack/src/navigators/createStackNavigator";
-import TabNavigator from "./navigation/TabNavigator";
-import {TextInput, TouchableOpacity} from "react-native-gesture-handler";
-import {StatusBar} from "expo-status-bar";
+import {Alert, AsyncStorage, Dimensions, Image, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 
-
-
-
-
+import * as SecureStore from 'expo-secure-store';
+import Login from "./screens/login/Login";
+import StartUpNavigation from "./navigation/StartUpNavigation";
+import {createStackNavigator} from "@react-navigation/stack";
+import {NavigationContainer} from "@react-navigation/native";
+import RegistrationScreen from "./screens/registration/RegistrationScreen";
 
 
 export default class App extends React.Component {
 
-    constructor(){
+    constructor(props) {
 
-        super();
+        super(props);
+        this.changeLoginStatus = this.changeLoginStatus.bind(this)
 
-    };
-    state = {
-        renderReg: true,
-        renderLogin: false,
-        renderTab: false,
-    }
+        this.state = {
+            loggedIn: false,
+            session: '',
 
-    _setReg(){
-        this.setState({renderReg: false, renderLogin: true})
-    }
-
-    _setLogin(){
-        this.setState({renderTab: true, renderLogin: false})
-    }
-
-
-
-    _renderRegistration() {
-        {
-            return (
-                <SafeAreaView style={styles.container}>
-                    <View style={styles.imageContainer}>
-
-                    </View>
-                    <TouchableOpacity style={styles.touchableButton}>
-                        <Text style={styles.touchableText}> Sign up with Google </Text>
-                        {/*onPress={()=> go to google and get info*/}
-                    </TouchableOpacity>
-
-                    <Text style={styles.setInfo}>Username</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Your username"
-                        autoCapitalize="none"
-                        //onChangeText={(val) => setUsername(val)}
-                    />
-
-                    <Text style={styles.setInfo}>Email</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Your email"
-                        autoCapitalize="none"
-                        //onChangeText={(val) => setEmail(val)}
-                    />
-
-                    <Text style={styles.setInfo}>Password</Text>
-                    <TextInput
-                        style={styles.input}
-                        secureTextEntry={true}
-                        placeholder="Your password"
-                        autoCapitalize="none"
-                        //onChangeText={(val) => setPasswordAttempt1(val)}
-                    />
-
-                    <Text style={styles.setInfo}>Confirm Password</Text>
-                    <TextInput
-                        style={styles.input}
-                        secureTextEntry={true}
-                        placeholder="Your password"
-                        autoCapitalize="none"
-                        //onChangeText={(val) => setPasswordAttempt2(val)}
-                    />
-
-                    <TouchableOpacity style={styles.touchableButton}>
-                        <Text style={styles.touchableText}> Sign Up </Text>
-                        {/*onPress={()=> add to database and go to home?*/}
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.touchable}
-                                      onPress={() => this._setReg()}>
-                        <Text style={styles.loginText}> Already signed up? Login </Text>
-
-                    </TouchableOpacity>
-                </SafeAreaView>
-            );
         }
+
     }
 
-    _renderLogin() {
+    changeLoginStatus() {
+        console.log("RAN CHANGE LOGIN")
+        this.setState({loggedIn: true});
+    }
+
+    componentDidMount() {
+        //this.isLoggedIn();
+    }
+
+    isLoggedIn() {
+        const userID = SecureStore.getItem('userID');
+        SecureStore.getItemAsync('session').then(sessionToken => {
+            this.setState({
+                session: sessionToken,
+                loggedIn: true
+            })
+        });
+    }
+
+    startStuff() {
+        const Stack = createStackNavigator();
+
 
         return (
+            <NavigationContainer>
+                <Stack.Navigator>
+                    <Stack.Screen name={'Login'} component={Login} changeLoginStatus={this.changeLoginStatus}/>
 
-            <View style={styles.container}>
-
-                <StatusBar style="auto"/>
-                <View style={styles.header}>
-                    <Text style={styles.welcomeWords}>Welcome! Happy Trading Games, and may the odds be ever in your
-                        favor. </Text>
-                </View>
-                <View style={styles.footer}>
-                    <Text style={styles.footerWords}>Username</Text>
-                    <TextInput
-                        placeholder="Your Username/Email"
-                        style={styles.textInput}
-                        autoCapitalize="none"
-                    />
-                    <Text style={styles.footerWords}>Password</Text>
-                    <TextInput
-                        placeholder="Your top secret Password"
-                        style={styles.textInput}
-                        autoCapitalize="none"
-
-                    /><TouchableOpacity onPress={() => Alert.alert('Simple Button pressed')}
-                                        style={styles.buttonForgot}>
-                    <Text style={styles.forgotPass}>Forgot Password?</Text>
-                </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => Alert.alert('Simple Button pressed')}
-                                      style={styles.buttonSign}>
-                        <Text style={styles.buttonWords}>Sign In</Text>
-                    </TouchableOpacity>
-
-                    <Text style={{
-                        color: '#403f42',
-                        fontWeight: 'bold',
-                        fontSize: 25,
-                        alignItems: 'center',
-                        paddingLeft: widthfoot - (widthfoot / 3),
-                        paddingTop: 10
-                    }}>Or</Text>
-
-                    <TouchableOpacity onPress={() => {
-                        this._setLogin();
-                    }}
-                                      style={styles.buttonSign}>
-                        <Text style={styles.buttonWords}>Register</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-
-        );
-
+                    <Stack.Screen name={'Registration'} component={RegistrationScreen}/>
+                </Stack.Navigator>
+            </NavigationContainer>
+        )
     }
 
+    render() {
 
+        return (this.startStuff())
 
-
-    render(){
-        if (this.state.renderReg) {
-            return (this._renderRegistration());
-
-        }else if (this.state.renderLogin) {
-            return (this._renderLogin());
-        }else {
-            return(<TabNavigator/>)
-        }
     }
 };
 

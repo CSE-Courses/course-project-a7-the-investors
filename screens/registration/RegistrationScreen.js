@@ -32,16 +32,19 @@ export default class RegistrationScreen extends Component {
 
     createAccount() {
         Parse.setAsyncStorage(AsyncStorage);
+        Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
         Parse.initialize(
-            '9FkKTALI6H9nVAMUlemUOuSmfGml9pbJ5ais2Cbu', // This is your Application ID
-            'TRfJthSV8RSf85ShAHlrr4p2WfSGwqbv7LXYgEhP' // This is your Javascript key
-        );        Parse.serverURL = 'https://parseapi.back4app.com/'
+            'DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz', // This is your Application ID
+            '97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4' // This is your Javascript key
+        );
+
         const user = new Parse.User()
-       // const user = new User();
+        // const user = new User();
 
         user.set("username", this.state.username);
         user.set("email", this.state.email);
         user.set("password", this.state.password);
+
         user.signUp().then((user) => {
             if (typeof document !== 'undefined') document.write(`User signed up: ${JSON.stringify(user)}`);
             console.log('User signed up', user);
@@ -104,9 +107,10 @@ export default class RegistrationScreen extends Component {
                     {/*onPress={()=> add to database and go to home?*/}
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.touchable}>
+                <TouchableOpacity style={styles.touchable}
+                                  onPress={() => this.props.navigation.navigate('Login')}
+                >
                     <Text style={styles.loginText}> Already signed up? Login </Text>
-                    {/*onPress={()=> navigation.navigate('Login')}*/}
                 </TouchableOpacity>
             </SafeAreaView>
         );
