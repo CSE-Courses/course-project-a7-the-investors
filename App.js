@@ -34,7 +34,10 @@ export default class App extends React.Component {
         this.setState({loggedIn: true});
         console.log(this.state.loggedIn);
     }
-
+    rmLoginStatus(){
+        this.setState({loggedIn: true});
+        console.log(this.state.loggedIn);
+    }
     isLoggedIn() {
         //const userID = SecureStore.getItem('userID');
         SecureStore.getItemAsync('session').then(sessionToken => {

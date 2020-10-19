@@ -4,6 +4,7 @@ import {StyleSheet, Button, Text, View, TouchableOpacity, Dimensions, TextInput,
 import RegistrationScreen from "../registration/RegistrationScreen";
 import {AsyncStorage} from 'react-native';
 import Parse from 'parse/react-native.js';
+import { setEmail, setID, setUserName } from '../profile/Info';
 
 const height = Dimensions.get('window').height * 0.75;
 const widthfoot = Dimensions.get('window').width;
@@ -30,6 +31,8 @@ export default class Login extends React.Component {
             // Do stuff after successful login
             if (typeof document !== 'undefined') document.write(`Logged in user: ${JSON.stringify(user)}`);
             console.log('Logged in user', user);
+            setUserName(this.state.email);
+            setEmail(this.state.password);
             this.props.changeLoginStatus();
         }).catch(error => {
             if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
