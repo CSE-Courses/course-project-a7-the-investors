@@ -7,6 +7,7 @@ import StartUpNavigation from "./navigation/StartUpNavigation";
 import {createStackNavigator} from "@react-navigation/stack";
 import {NavigationContainer} from "@react-navigation/native";
 import RegistrationScreen from "./screens/registration/RegistrationScreen";
+import TabNavigator from "./navigation/TabNavigator";
 
 
 export default class App extends React.Component {
@@ -18,23 +19,24 @@ export default class App extends React.Component {
 
         this.state = {
             loggedIn: false,
-            session: '',
+            session: 'ralkajsdf;alsdkfj',
 
         }
 
-    }
-
-    changeLoginStatus() {
-        console.log("RAN CHANGE LOGIN")
-        this.setState({loggedIn: true});
     }
 
     componentDidMount() {
         //this.isLoggedIn();
     }
 
+    changeLoginStatus() {
+        console.log("RAN CHANGE LOGIN")
+        this.setState({loggedIn: true});
+        console.log(this.state.loggedIn);
+    }
+
     isLoggedIn() {
-        const userID = SecureStore.getItem('userID');
+        //const userID = SecureStore.getItem('userID');
         SecureStore.getItemAsync('session').then(sessionToken => {
             this.setState({
                 session: sessionToken,
@@ -43,14 +45,16 @@ export default class App extends React.Component {
         });
     }
 
-    startStuff() {
+    loginAndRegistration() {
         const Stack = createStackNavigator();
 
 
         return (
             <NavigationContainer>
                 <Stack.Navigator>
-                    <Stack.Screen name={'Login'} component={Login} changeLoginStatus={this.changeLoginStatus}/>
+                    <Stack.Screen name={'Login'}>
+                        {props => <Login {...props} changeLoginStatus={this.changeLoginStatus} />}
+                    </Stack.Screen>
 
                     <Stack.Screen name={'Registration'} component={RegistrationScreen}/>
                 </Stack.Navigator>
@@ -60,7 +64,12 @@ export default class App extends React.Component {
 
     render() {
 
-        return (this.startStuff())
+
+        if (!this.state.loggedIn) {
+            return (this.loginAndRegistration());
+        } else {
+            return (<TabNavigator/>);
+        }
 
     }
 };

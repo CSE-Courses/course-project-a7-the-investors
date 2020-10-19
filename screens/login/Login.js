@@ -19,8 +19,10 @@ export default class Login extends React.Component {
     }
 
     login(){
+        this.props.changeLoginStatus;
         Parse.setAsyncStorage(AsyncStorage);
         Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
+        console.log(this.props.changeLoginStatus)
         Parse.initialize(
             'DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz', // This is your Application ID
             '97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4' // This is your Javascript key
@@ -30,7 +32,6 @@ export default class Login extends React.Component {
             // Do stuff after successful login
             if (typeof document !== 'undefined') document.write(`Logged in user: ${JSON.stringify(user)}`);
             console.log('Logged in user', user);
-            this.props.changeLoginStatus;
         }).catch(error => {
             if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
             console.error('Error while logging in user', error);
