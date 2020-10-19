@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Dimensions, Text, View, ScrollView} from "react-native";
+import {Dimensions, Text, View, ScrollView, TextInput} from "react-native";
 import {Component} from "react";
 import StockRow from "./StockRow";
 
@@ -14,12 +14,13 @@ export default class StockBoard extends Component {
 
     }
 
-    async componentDidMount() {
-
-
-        await this.getStarterStocks()
+    stockSearch() {
+        
     }
 
+    async componentDidMount() {
+        await this.getStarterStocks()
+    }
 
 
     async getStarterStocks() {
@@ -73,6 +74,8 @@ export default class StockBoard extends Component {
         console.log(screenHeight);
         return (
             <View style={[styles.container, {height: screenHeight * .6}]}>
+                {/* render stock search as text input */}
+                <TextInput style={styles.input} defaultValue={"Search"}>  </TextInput>
                 <View style={styles.headers}>
                     <View>
                         <Text> Name</Text>
@@ -118,12 +121,9 @@ export default class StockBoard extends Component {
 };
 
 const styles = {
-
     boardContainer: {
         marginTop: 20,
         alignItems: 'center',
-
-
     },
     board: {
         borderWidth: 1,
@@ -139,7 +139,6 @@ const styles = {
         shadowRadius: 1.3,
         elevation: 2,
     },
-
     headers: {
         flex: 1,
         flexDirection: 'row',
@@ -160,6 +159,22 @@ const styles = {
     },
     cashValue: {
         fontSize: 43
+    },
+    //for search
+    container: {
+        marginTop: 10,
+        alignItems:'center'
+
+    },
+    input: {
+        borderColor: '#7a42f4',
+        backgroundColor: 'grey',
+        width: '33%',
+        height: 25,
+        borderRadius:34,
+        borderTopLeftRadius: 34,
+        borderTopRightRadius: 34
+
     }
 
 };

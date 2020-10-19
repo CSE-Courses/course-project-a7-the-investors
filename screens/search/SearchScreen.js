@@ -3,7 +3,6 @@ import {Dimensions, Text, View, TextInput} from "react-native";
 import {Component} from "react";
 import StockBoard from "./StockBoard";
 import AppHeader from "../../navigation/AppHeader";
-import StockSearch from "./StockSearch";
 
 export default class SearchScreen extends Component {
     constructor(props) {
@@ -13,17 +12,10 @@ export default class SearchScreen extends Component {
 
     }
 
-
-
-
-
-
-
     render() {
         return (
             <View style={styles.container}>
                 <AppHeader/>
-                <StockSearch/>
                 <View style={styles.content}>
                     <StockBoard/>
                 </View>
