@@ -26,7 +26,8 @@ export default class StockBoard extends Component {
         "SBUX",
         "BABA",
       ],
-      cost: [],
+      row: [],
+      change: [],
     };
   }
 
@@ -35,7 +36,8 @@ export default class StockBoard extends Component {
   }
 
   async getStarterStocks() {
-    const stockCost = [];
+    //temporary row hold stock name, percent change, and current price
+    const tempRow = [];
     for (const stock of this.state.stocks) {
       await fetch(
         "https://finnhub.io/api/v1/quote?symbol=" +
@@ -45,7 +47,12 @@ export default class StockBoard extends Component {
         .then((res) => res.json())
         .then(
           (result) => {
-            stockCost.push([stock, result.c]);
+            //c = current price, pc = previous close
+            tempRow.push([
+              stock,
+              ((result.c - result.pc) / result.pc) * 100,
+              result.c,
+            ]);
           },
           (error) => {
             console.log(error);
@@ -53,9 +60,9 @@ export default class StockBoard extends Component {
         );
     }
     this.setState({
-      cost: stockCost,
+      row: tempRow,
     });
-    console.log("currently viewed stock(s): " + this.state.cost);
+    console.log("currently viewed stock(s): " + this.state.row);
 
     //
     //         socket.addEventListener('open', function (event) {
@@ -90,27 +97,16 @@ export default class StockBoard extends Component {
             <Text style={styles.buttonWords}>VIEW</Text>
           </TouchableOpacity>
         </View>
-
-        <View style={styles.headers}>
-          <View>
-            <Text> Name</Text>
-          </View>
-          <View>
-            <Text> Change</Text>
-          </View>
-          <View>
-            <Text> Price</Text>
-          </View>
-        </View>
         <View style={styles.boardContainer}>
           <View style={[styles.board, { height: screenHeight * 0.57 }]}>
             <ScrollView>
-              {this.state.cost.map((list) => {
+              {this.state.row.map((list) => {
                 return (
                   <StockRow
                     key={list[0]}
                     stockName={list[0]}
-                    stockCost={list[1]}
+                    percentChange={list[1]}
+                    stockCost={list[2]}
                   />
                 );
               })}
