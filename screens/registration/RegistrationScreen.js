@@ -48,6 +48,7 @@ export default class RegistrationScreen extends Component {
         user.signUp().then((user) => {
             if (typeof document !== 'undefined') document.write(`User signed up: ${JSON.stringify(user)}`);
             console.log('User signed up', user);
+            this.props.changeLoginStatus();
         }).catch(error => {
             if (typeof document !== 'undefined') document.write(`Error while signing up user: ${JSON.stringify(error)}`);
             console.error('Error while signing up user', error);
@@ -64,7 +65,7 @@ export default class RegistrationScreen extends Component {
                         source={require("../../assets/stockPhoto.jpg")}
                     />
                 </View>
-                <TouchableOpacity style={styles.touchableButton} onPress={() => this.createAccount()}>
+                <TouchableOpacity style={styles.touchableButton} >
                     <Text style={styles.touchableText}> Sign up with Google </Text>
                 </TouchableOpacity>
 
@@ -102,7 +103,7 @@ export default class RegistrationScreen extends Component {
                     onChangeText={(text) => this.setState({confirmPassword: text})}
                 />
 
-                <TouchableOpacity style={styles.touchableButton}>
+                <TouchableOpacity style={styles.touchableButton} onPress={() => this.createAccount()}>
                     <Text style={styles.touchableText}> Sign Up </Text>
                     {/*onPress={()=> add to database and go to home?*/}
                 </TouchableOpacity>

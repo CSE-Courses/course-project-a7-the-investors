@@ -56,7 +56,10 @@ export default class App extends React.Component {
                         {props => <Login {...props} changeLoginStatus={this.changeLoginStatus} />}
                     </Stack.Screen>
 
-                    <Stack.Screen name={'Registration'} component={RegistrationScreen}/>
+                    <Stack.Screen name={'Registration'} >
+                        {props => <RegistrationScreen {...props} changeLoginStatus={this.changeLoginStatus} />}
+
+                    </Stack.Screen>
                 </Stack.Navigator>
             </NavigationContainer>
         )
