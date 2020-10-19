@@ -8,15 +8,27 @@ export default class StockRow extends Component {
   }
 
   render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.textStyling}> {this.props.stockName} </Text>
-        <Text style={styles.textStyling}>
-          {JSON.stringify(this.props.percentChange).substring(0, 4)}%
-        </Text>
-        <Text style={styles.textStyling}> ${this.props.stockCost} </Text>
-      </View>
-    );
+    if (this.props.percentChange > 0) {
+      return (
+        <View style={styles.container}>
+          <Text style={styles.textStyling}> {this.props.stockName} </Text>
+          <Text style={styles.positive}>
+            {JSON.stringify(this.props.percentChange).substring(0, 4)}%
+          </Text>
+          <Text style={styles.textStyling}> ${this.props.stockCost} </Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.container}>
+          <Text style={styles.textStyling}> {this.props.stockName} </Text>
+          <Text style={styles.negative}>
+            {JSON.stringify(this.props.percentChange).substring(0, 4)}%
+          </Text>
+          <Text style={styles.textStyling}> ${this.props.stockCost} </Text>
+        </View>
+      );
+    }
   }
 }
 
@@ -34,5 +46,13 @@ const styles = {
   },
   textStyling: {
     fontSize: 20,
+  },
+  positive: {
+    fontSize: 20,
+    color: "#008000",
+  },
+  negative: {
+    fontSize: 20,
+    color: "#800000",
   },
 };

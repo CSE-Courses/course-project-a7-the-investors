@@ -47,7 +47,7 @@ export default class StockBoard extends Component {
         .then((res) => res.json())
         .then(
           (result) => {
-            //c = current price, pc = previous close
+            //.c = current price, .pc = previous close, .o = opening price
             tempRow.push([
               stock,
               ((result.c - result.pc) / result.pc) * 100,
@@ -98,7 +98,7 @@ export default class StockBoard extends Component {
           </TouchableOpacity>
         </View>
         <View style={styles.boardContainer}>
-          <View style={[styles.board, { height: screenHeight * 0.57 }]}>
+          <View style={[styles.board, { height: screenHeight * 0.55 }]}>
             <ScrollView>
               {this.state.row.map((list) => {
                 return (
