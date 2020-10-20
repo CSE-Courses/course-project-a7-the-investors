@@ -3,7 +3,7 @@ import * as React from 'react';
 import {Text, View, TouchableOpacity, StyleSheet, Image} from "react-native";
 import {AsyncStorage} from 'react-native';
 import Parse, { User } from 'parse/react-native.js';
-import { getID, getpasswd, getUserName } from './Info';
+import { getEmail, getID, getpasswd, getUserName } from './Info';
 
 
 export default class ProfileScreen extends React.Component {
@@ -30,7 +30,7 @@ export default class ProfileScreen extends React.Component {
   const query = new Parse.Query(user);
   
   // Finds the user by its ID
-  query.get(getID()).then((user) => {
+  query.get(getEmail()).then((user) => {
     // Invokes the "destroy" method to delete the user
     user.destroy().then((response) => {
       if (typeof document !== 'undefined') document.write(`Deleted user: ${JSON.stringify(response)}`);

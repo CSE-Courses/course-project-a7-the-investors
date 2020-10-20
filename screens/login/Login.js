@@ -40,7 +40,7 @@ export default class Login extends React.Component {
             console.log(getUserName());
             setpass(this.state.password);
             console.log(getpasswd());
-            setID(Parse.User.current().id);
+            setEmail(Parse.User.current().id);
             userId = user.id;
 
 
