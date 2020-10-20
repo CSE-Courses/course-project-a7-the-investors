@@ -3,6 +3,7 @@ import * as React from 'react';
 import {Text, View, TouchableOpacity, StyleSheet, Image, TextInput} from "react-native";
 import {AsyncStorage} from 'react-native';
 import Parse, { User } from 'parse/react-native.js';
+import * as SecureStore from "expo-secure-store";
 import { getID, getpasswd, getUserName } from './Info';
 
 
@@ -13,6 +14,49 @@ export default class ProfileScreen extends React.Component {
     this.state = {
       imageURL: "https://image.flaticon.com/icons/png/512/64/64495.png"
     }
+  }
+  
+  
+
+  async updateProfilePicture() {
+    Parse.setAsyncStorage(AsyncStorage);
+    Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
+    Parse.initialize(
+        'DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz', // This is your Application ID
+        '97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4' // This is your Javascript key
+    );
+
+    let sessionToken;
+
+    SecureStore.getItemAsync('sessionToken').then(token => {
+        sessionToken = token;
+        console.log("THIS IS THE TOKEN" + token);
+    });
+
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+    
+    
+    
+    Parse.User.me(sessionToken).then((user) => {
+
+        const currentUser = Parse.User.current();
+        let URL = this.state.imageURL;
+        currentUser.set("profilePictureUrl", URL);
+        user.save().then((response) => {
+            if (typeof document !== 'undefined') document.write(`Updated user: ${JSON.stringify(response)}`);
+            console.log('Updated user', response);
+        }).catch((error) => {
+            if (typeof document !== 'undefined') document.write(`Error while updating user: ${JSON.stringify(error)}`);
+            console.error('Error while updating user', error);
+        });
+
+        if (typeof document !== 'undefined') document.write(`Current logged in user: ${JSON.stringify(currentUser)}`);
+        console.log('Current logged in user', currentUser);
+    }).catch(error => {
+        if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
+        console.error('Error while logging in user', error);
+    });
   }
 
   delUser(){
@@ -51,8 +95,6 @@ export default class ProfileScreen extends React.Component {
   });
   };
 
-  
-
 
   render() {
     return (
@@ -65,6 +107,7 @@ export default class ProfileScreen extends React.Component {
           onChangeText = {(text) => this.setState({imageURL: text}) }
           // blurOnSubmit = {true}
           // clearTextOnFocus = {true}
+          onSubmitEditing = {() => this.updateProfilePicture()}
           value = {""}
         />
         <Text style={styles.text}>{"\n"} UserName: {getUserName()}</Text>
