@@ -30,7 +30,7 @@ export default class ProfileScreen extends React.Component {
   const query = new Parse.Query(user);
   
   // Finds the user by its ID
-  query.get('meLDc0sVD8').then((user) => {
+  query.get(getID()).then((user) => {
     // Invokes the "destroy" method to delete the user
     user.destroy().then((response) => {
       if (typeof document !== 'undefined') document.write(`Deleted user: ${JSON.stringify(response)}`);
