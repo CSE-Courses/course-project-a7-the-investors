@@ -29,6 +29,7 @@ export default class Login extends React.Component {
         );
 
         let sessionToken;
+        let userId;
         await Parse.User.logIn(this.state.email,this.state.password).then((user) => {
             // Do stuff after successful login
             if (typeof document !== 'undefined') document.write(`Logged in user: ${JSON.stringify(user)}`);
@@ -37,12 +38,18 @@ export default class Login extends React.Component {
             sessionToken = user.get('sessionToken');
             setUserName(this.state.email);
             setEmail(this.state.password);
+            userId = user.id;
+
 
         }).catch(error => {
             if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
             console.error('Error while logging in user', error);
         })
         await SecureStore.setItemAsync('sessionToken', sessionToken).then(() => {
+            console.log("SET ITEM")
+        })
+
+        await SecureStore.setItemAsync('userId', userId).then(() => {
             console.log("SET ITEM")
         })
 

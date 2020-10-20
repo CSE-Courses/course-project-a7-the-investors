@@ -57,12 +57,14 @@ export default class RegistrationScreen extends Component {
 
         if (successfulLogin) {
             let sessionToken;
+            let userId;
             await Parse.User.logIn(this.state.email, this.state.password).then((user) => {
                 // Do stuff after successful login
                 if (typeof document !== 'undefined') document.write(`Logged in user: ${JSON.stringify(user)}`);
                 //console.log("TOKEN:   "  + user.get('sessionToken'))
                 this.props.changeLoginStatus();
                 sessionToken = user.get('sessionToken');
+                userId = user.id;
 
             }).catch(error => {
                 if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
@@ -71,6 +73,10 @@ export default class RegistrationScreen extends Component {
 
 
             await SecureStore.setItemAsync('sessionToken', sessionToken).then(() => {
+                console.log("SET ITEM")
+            })
+
+            await SecureStore.setItemAsync('userId', userId).then(() => {
                 console.log("SET ITEM")
             })
 
