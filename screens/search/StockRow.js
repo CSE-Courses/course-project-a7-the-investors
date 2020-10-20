@@ -46,13 +46,16 @@ const styles = {
   },
   textStyling: {
     fontSize: 20,
+    flex:1,
   },
   positive: {
     fontSize: 20,
     color: "#008000",
+    flex:1,
   },
   negative: {
     fontSize: 20,
     color: "#800000",
+    flex:1,
   },
 };
