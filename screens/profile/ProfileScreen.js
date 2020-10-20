@@ -1,12 +1,19 @@
 
 import * as React from 'react';
-import {Text, View, TouchableOpacity, StyleSheet, Image} from "react-native";
+import {Text, View, TouchableOpacity, StyleSheet, Image, TextInput} from "react-native";
 import {AsyncStorage} from 'react-native';
 import Parse, { User } from 'parse/react-native.js';
 import { getID, getpasswd, getUserName } from './Info';
 
 
 export default class ProfileScreen extends React.Component {
+  
+  constructor(props) {
+    super(props);
+    this.state = {
+      imageURL: "https://image.flaticon.com/icons/png/512/64/64495.png"
+    }
+  }
 
   delUser(){
    
@@ -50,8 +57,16 @@ export default class ProfileScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image style={styles.image} source={require("./profile-icon.png")} />
-
+        <Image style={styles.image} source={{uri: this.state.imageURL}} />
+        <TextInput
+          placeholder = "Insert URL to change profile"
+          autoCapitalize="none"
+          style = {{ height: 40, borderColor: 'gray', borderWidth: 0 }}
+          onChangeText = {(text) => this.setState({imageURL: text}) }
+          // blurOnSubmit = {true}
+          // clearTextOnFocus = {true}
+          value = {""}
+        />
         <Text style={styles.text}>{"\n"} UserName: {getUserName()}</Text>
         <Text style={styles.text}>{"\n"}Email: {getID()}</Text>
         <Text style={styles.text}>{"\n"}Member since 9/28/2020</Text>
@@ -78,8 +93,8 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   image: {
-    width: 150,
-    height: 150,
+    width: 200,
+    height: 200,
   },
   buttonSign: {
     elevation: 8,
