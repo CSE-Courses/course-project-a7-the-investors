@@ -1,17 +1,14 @@
 import * as React from "react";
 import {AsyncStorage} from 'react-native';
 import Parse from 'parse/react-native.js';
-import {
-    Text,
-    View,
-    StyleSheet,
-    Button,
-    SafeAreaView,
-    Image,
+import {Text, View, StyleSheet, Button, Image, Dimensions, KeyboardAvoidingView
 } from "react-native";
 import {Component} from "react";
 import {TextInput, TouchableOpacity} from "react-native-gesture-handler";
 import * as SecureStore from "expo-secure-store";
+
+
+const widthfoot = Dimensions.get('window').width;
 
 export default class RegistrationScreen extends Component {
     constructor(props) {
@@ -21,15 +18,8 @@ export default class RegistrationScreen extends Component {
             email: '',
             password: '',
             confirmPassword: ''
-
         }
     }
-
-    /*const [data, setData] = React.useState({
-          username: '',
-          email: '',
-          password: '',
-      });*/
 
     async createAccount() {
         Parse.setAsyncStorage(AsyncStorage);
@@ -85,84 +75,87 @@ export default class RegistrationScreen extends Component {
     render() {
 
         return (
-            <SafeAreaView style={styles.container}>
-                <View style={styles.imageContainer}>
-                    <Image
-                        style={styles.image}
-                        source={require("../../assets/stockPhoto.jpg")}
-                    />
+            <KeyboardAvoidingView style={styles.container} behavior='padding'>
+                <View style={styles.header}>
+                    <Text style={styles.welcomeWords}>Register for new account! </Text>
                 </View>
-                <TouchableOpacity style={styles.touchableButton} >
-                    <Text style={styles.touchableText}> Sign up with Google </Text>
-                </TouchableOpacity>
+                <View style={styles.footer}>
+                    <Text style={styles.setInfo}>Username</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Your username"
+                        autoCapitalize="none"
+                        onChangeText={(text) => this.setState({username: text})}
+                    />
 
-                <Text style={styles.setInfo}>Username</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Your username"
-                    autoCapitalize="none"
-                    onChangeText={(text) => this.setState({username: text})}
-                />
+                    <Text style={styles.setInfo}>Email</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Your email"
+                        autoCapitalize="none"
+                        onChangeText={(text) => this.setState({email: text})}
+                    />
 
-                <Text style={styles.setInfo}>Email</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Your email"
-                    autoCapitalize="none"
-                    onChangeText={(text) => this.setState({email: text})}
-                />
+                    <Text style={styles.setInfo}>Password</Text>
+                    <TextInput
+                        style={styles.input}
+                        secureTextEntry={true}
+                        placeholder="Your password"
+                        autoCapitalize="none"
+                        onChangeText={(text) => this.setState({password: text})}
+                    />
 
-                <Text style={styles.setInfo}>Password</Text>
-                <TextInput
-                    style={styles.input}
-                    secureTextEntry={true}
-                    placeholder="Your password"
-                    autoCapitalize="none"
-                    onChangeText={(text) => this.setState({password: text})}
-                />
+                    <Text style={styles.setInfo}>Confirm Password</Text>
+                    <TextInput
+                        style={styles.input}
+                        secureTextEntry={true}
+                        placeholder="Your password"
+                        autoCapitalize="none"
+                        onChangeText={(text) => this.setState({confirmPassword: text})}
+                    />
 
-                <Text style={styles.setInfo}>Confirm Password</Text>
-                <TextInput
-                    style={styles.input}
-                    secureTextEntry={true}
-                    placeholder="Your password"
-                    autoCapitalize="none"
-                    onChangeText={(text) => this.setState({confirmPassword: text})}
-                />
-
-                <TouchableOpacity style={styles.touchableButton} onPress={() => this.createAccount()}>
-                    <Text style={styles.touchableText}> Sign Up </Text>
-                    {/*onPress={()=> add to database and go to home?*/}
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.touchable}
-                                  onPress={() => this.props.navigation.navigate('Login')}
-                >
-                    <Text style={styles.loginText}> Already signed up? Login </Text>
-                </TouchableOpacity>
-            </SafeAreaView>
+                    <TouchableOpacity style={styles.touchableButton} onPress={() => this.createAccount()}>
+                        <Text style={styles.touchableText}> Sign Up </Text>
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAvoidingView>
         );
     }
 }
+
 styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: '#fff',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
     },
-    imageContainer: {
-        alignItems: "center",
-        paddingTop: 30,
-        margin: 10,
+    header: {
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        paddingBottom: 30
     },
-    image: {
-        width: 123,
-        height: 81,
+    welcomeWords: {
+        color: '#403f42',
+        fontWeight: 'bold',
+        fontSize: 25,
+        alignSelf: "center",
     },
+    footer: {
+        backgroundColor: "#889b73",
+        flex: 4,
+        width: widthfoot,
+        paddingVertical: 30,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+    },    
     input: {
-        borderWidth: 1,
-        borderColor: "#777",
+        borderWidth: 3,
+        borderColor: "#EAFAF1",
+        height: 40,
         padding: 10,
         marginHorizontal: 20,
+        color: '#05375a',
         borderRadius: 5,
     },
     login: {
@@ -173,28 +166,28 @@ styles = StyleSheet.create({
         fontSize: 14,
     },
     setInfo: {
-        backgroundColor: "#fff",
+        color: '#05375a',
         marginHorizontal: 20,
-        marginTop: 10,
-        marginBottom: 5,
-    },
-    touchable: {
-        justifyContent: "center",
-        alignItems: "center",
-        color: "#B95C24",
-        padding: 10,
+        paddingTop: 10,
+        paddingBottom: 5,
+        fontSize: 20,
     },
     touchableButton: {
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#B95C24",
-        padding: 10,
-        marginHorizontal: 30,
-        marginVertical: 10,
-        borderRadius: 15,
+        backgroundColor: "#fff",
+        elevation: 8,
+        borderRadius: 10,
+        padding: 12,
+        marginLeft: widthfoot / 2,
+        marginRight: 20,
+        marginTop: 20,
     },
     touchableText: {
+        fontSize: 18,
+        color: "#008000",
         fontWeight: "bold",
-        fontSize: 16,
+        alignSelf: "center",
+        textTransform: "uppercase"
     },
 });

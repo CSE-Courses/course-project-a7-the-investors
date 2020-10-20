@@ -122,10 +122,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 
-
     header: {
         flex: 1,
-        justifyContent: 'flex-end',
         paddingHorizontal: 20,
         paddingBottom: 50
     },
@@ -159,7 +157,8 @@ const styles = StyleSheet.create({
         borderWidth: 3,
         marginBottom: 0,
         color: '#05375a',
-
+        borderRadius: 5,
+        padding: 10,
     },
     forgotPass: {
         color: '#05375a',
