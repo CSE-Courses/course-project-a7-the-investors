@@ -4,7 +4,7 @@ import { Component } from "react";
 import StockBoard from "./StockBoard";
 import AppHeader from "../../navigation/AppHeader";
 
-export default class SearchScreen extends Component {
+export default class ViewingStock extends Component {
   constructor(props) {
     super(props);
   }
@@ -13,9 +13,7 @@ export default class SearchScreen extends Component {
     return (
       <View style={styles.container}>
         <AppHeader />
-        <View style={styles.content}>
-          <StockBoard />
-        </View>
+        <View style={styles.content}></View>
       </View>
     );
   }
