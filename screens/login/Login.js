@@ -1,6 +1,7 @@
 import {StatusBar} from 'expo-status-bar';
 import React from 'react';
 import {StyleSheet, Button, Text, View, TouchableOpacity, Dimensions, TextInput, Alert} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import RegistrationScreen from "../registration/RegistrationScreen";
 import {AsyncStorage} from 'react-native';
 import Parse from 'parse/react-native.js';
@@ -59,7 +60,11 @@ export default class Login extends React.Component {
 
         return (
 
-            <View style={styles.container}>
+            <KeyboardAwareScrollView
+            style={{ backgroundColor: 'white' }}
+            resetScrollToCoords={{ x:0, y:0 }}
+            contentContainerStyle={styles.container}
+            scrollEnabled={false}>
 
                 <StatusBar style="auto"/>
                 <View style={styles.header}>
@@ -107,7 +112,7 @@ export default class Login extends React.Component {
                         <Text style={styles.buttonWords}>Register</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </KeyboardAwareScrollView>
 
 
         );
@@ -124,6 +129,7 @@ const styles = StyleSheet.create({
 
     header: {
         flex: 1,
+        justifyContent: 'flex-end',
         paddingHorizontal: 20,
         paddingBottom: 50
     },

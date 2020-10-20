@@ -1,8 +1,9 @@
 import * as React from "react";
 import {AsyncStorage} from 'react-native';
 import Parse from 'parse/react-native.js';
-import {Text, View, StyleSheet, Button, Image, Dimensions, KeyboardAvoidingView
+import {Text, View, StyleSheet, Button, Image, Dimensions,
 } from "react-native";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import {Component} from "react";
 import {TextInput, TouchableOpacity} from "react-native-gesture-handler";
 import * as SecureStore from "expo-secure-store";
@@ -73,9 +74,12 @@ export default class RegistrationScreen extends Component {
     }
 
     render() {
-
         return (
-            <KeyboardAvoidingView style={styles.container} behavior='padding'>
+            <KeyboardAwareScrollView
+            style={{ backgroundColor: 'white' }}
+            resetScrollToCoords={{ x:0, y:0 }}
+            contentContainerStyle={styles.container}
+            scrollEnabled={false}>
                 <View style={styles.header}>
                     <Text style={styles.welcomeWords}>Register for new account! </Text>
                 </View>
@@ -118,7 +122,7 @@ export default class RegistrationScreen extends Component {
                         <Text style={styles.touchableText}> Sign Up </Text>
                     </TouchableOpacity>
                 </View>
-            </KeyboardAvoidingView>
+            </KeyboardAwareScrollView>
         );
     }
 }
