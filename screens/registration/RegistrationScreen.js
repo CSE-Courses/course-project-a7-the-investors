@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import {Component} from "react";
 import {TextInput, TouchableOpacity} from "react-native-gesture-handler";
+import * as SecureStore from "expo-secure-store";
 
 export default class RegistrationScreen extends Component {
     constructor(props) {
@@ -30,7 +31,7 @@ export default class RegistrationScreen extends Component {
           password: '',
       });*/
 
-    createAccount() {
+    async createAccount() {
         Parse.setAsyncStorage(AsyncStorage);
         Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
         Parse.initialize(
@@ -44,15 +45,41 @@ export default class RegistrationScreen extends Component {
         user.set("username", this.state.username);
         user.set("email", this.state.email);
         user.set("password", this.state.password);
-
-        user.signUp().then((user) => {
+        let successfulLogin = false;
+        await user.signUp().then((user) => {
             if (typeof document !== 'undefined') document.write(`User signed up: ${JSON.stringify(user)}`);
             console.log('User signed up', user);
-            this.props.changeLoginStatus();
+            successfulLogin = true;
         }).catch(error => {
             if (typeof document !== 'undefined') document.write(`Error while signing up user: ${JSON.stringify(error)}`);
             console.error('Error while signing up user', error);
         });
+
+        if (successfulLogin) {
+            let sessionToken;
+            await Parse.User.logIn(this.state.email, this.state.password).then((user) => {
+                // Do stuff after successful login
+                if (typeof document !== 'undefined') document.write(`Logged in user: ${JSON.stringify(user)}`);
+                //console.log("TOKEN:   "  + user.get('sessionToken'))
+                this.props.changeLoginStatus();
+                sessionToken = user.get('sessionToken');
+
+            }).catch(error => {
+                if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
+                console.error('Error while logging in user', error);
+            })
+
+
+            await SecureStore.setItemAsync('sessionToken', sessionToken).then(() => {
+                console.log("SET ITEM")
+            })
+
+            SecureStore.getItemAsync('sessionToken').then(token => {
+                console.log("THIS IS THE TOKEN" + token);
+            });
+        }
+
+
     }
 
     render() {

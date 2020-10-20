@@ -4,6 +4,7 @@ import {StyleSheet, Button, Text, View, TouchableOpacity, Dimensions, TextInput,
 import RegistrationScreen from "../registration/RegistrationScreen";
 import {AsyncStorage} from 'react-native';
 import Parse from 'parse/react-native.js';
+import * as SecureStore from "expo-secure-store";
 
 const height = Dimensions.get('window').height * 0.75;
 const widthfoot = Dimensions.get('window').width;
@@ -17,8 +18,7 @@ export default class Login extends React.Component {
             password:''
         }
     }
-
-    login(){
+    async login(){
         Parse.setAsyncStorage(AsyncStorage);
         Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
         Parse.initialize(
@@ -26,15 +26,28 @@ export default class Login extends React.Component {
             '97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4' // This is your Javascript key
         );
 
-        Parse.User.logIn(this.state.email,this.state.password).then((user) => {
+        let sessionToken;
+        await Parse.User.logIn(this.state.email,this.state.password).then((user) => {
             // Do stuff after successful login
             if (typeof document !== 'undefined') document.write(`Logged in user: ${JSON.stringify(user)}`);
-            console.log('Logged in user', user);
+            //console.log("TOKEN:   "  + user.get('sessionToken'))
             this.props.changeLoginStatus();
+            sessionToken = user.get('sessionToken');
+
         }).catch(error => {
             if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
             console.error('Error while logging in user', error);
         })
+        await SecureStore.setItemAsync('sessionToken', sessionToken).then(() => {
+            console.log("SET ITEM")
+        })
+
+        SecureStore.getItemAsync('sessionToken').then(token => {
+            console.log("THIS IS THE TOKEN" + token);
+        });
+
+
+
     }
 
 
