@@ -33,5 +33,6 @@ const styles = StyleSheet.create({
   },
   cashValue: {
     fontSize: 60,
+    color: "#05375a"
   },
 });
