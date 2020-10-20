@@ -4,6 +4,7 @@ import {Text, View, TouchableOpacity, StyleSheet, Image} from "react-native";
 import {AsyncStorage} from 'react-native';
 import Parse, { User } from 'parse/react-native.js';
 import { getEmail, getID, getpasswd, getUserName } from './Info';
+import login from '../login/Login';
 
 
 export default class ProfileScreen extends React.Component {
@@ -35,7 +36,7 @@ export default class ProfileScreen extends React.Component {
     user.destroy().then((response) => {
       if (typeof document !== 'undefined') document.write(`Deleted user: ${JSON.stringify(response)}`);
       console.log('Deleted user', response);
-      this.props.rmLoginStatus();
+      avo();
     }, (error) => {
       if (typeof document !== 'undefined') document.write(`Error while deleting user: ${JSON.stringify(error)}`);
       console.error('Error while deleting user', error);

@@ -33,6 +33,7 @@ export function setEmail(ido){
 export function getEmail(){
   return email;
 }
+
     module.exports = {
         functions: setID, getID, setEmail,setUserName,getEmail,getUserName,getpasswd,setpass
       };

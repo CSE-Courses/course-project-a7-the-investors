@@ -1,5 +1,5 @@
 import * as React from "react";
-import {AsyncStorage} from 'react-native';
+import {AsyncStorage, KeyboardAvoidingView} from 'react-native';
 import Parse from 'parse/react-native.js';
 import { getpasswd, getUserName, setEmail, setID, setpass, setUserName } from '../profile/Info';
 
@@ -65,12 +65,13 @@ export default class RegistrationScreen extends Component {
                 // Do stuff after successful login
                 if (typeof document !== 'undefined') document.write(`Logged in user: ${JSON.stringify(user)}`);
                 //console.log("TOKEN:   "  + user.get('sessionToken'))
-                this.props.changeLoginStatus();
+                
                 sessionToken = user.get('sessionToken');
                 userId = user.id;
                 setUserName(this.state.userName);
                 setpass(this.state.pass);
                 setEmail(Parse.User.current().id);
+                this.props.changeLoginStatus();
 
             }).catch(error => {
                 if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);

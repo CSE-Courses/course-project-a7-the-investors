@@ -11,6 +11,7 @@ import { getpasswd, getUserName, setEmail, setID, setpass, setUserName } from '.
 const height = Dimensions.get('window').height * 0.75;
 const widthfoot = Dimensions.get('window').width;
 
+
 export default class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -20,6 +21,7 @@ export default class Login extends React.Component {
             password:''
         }
     }
+    
     async login(){
         Parse.setAsyncStorage(AsyncStorage);
         Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
@@ -207,3 +209,10 @@ const styles = StyleSheet.create({
     }
 
 });
+/*export function avo(){
+    this.props.rmLoginStatus();
+  }
+  
+  module.exports = {
+    functions: avo,
+  };*/
