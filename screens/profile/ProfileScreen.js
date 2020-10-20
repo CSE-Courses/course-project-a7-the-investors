@@ -1,14 +1,31 @@
 import * as React from "react";
-import { Image, StyleSheet, TouchableOpacity, Text, View, Button, Platform, PermissionsAndroid } from "react-native";
-import * as ImagePicker from 'expo-image-picker';
+import { Image, StyleSheet, TouchableOpacity, Text, View, Button, TextInput } from "react-native";
+//import * as ImagePicker from 'expo-image-picker';
+//import * as Prompt from "react-native-input-prompt"
 
 export default class ProfileScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      imageURL: 'https://image.flaticon.com/icons/png/512/64/64495.png'
+    
+    }
+  }
   render() {
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={profilePicPress}>
-          <Image style={styles.image} source={require("./profile-icon.png")} />
-        </TouchableOpacity>
+        
+        <Image style={styles.image} source={{uri: this.state.imageURL}} />
+        <TextInput
+          placeholder = "Insert URL to change profile"
+          autoCapitalize="none"
+          style = {{ height: 40, borderColor: 'gray', borderWidth: 0 }}
+          onChangeText = {(text) => this.setState({imageURL: text}) }
+          blurOnSubmit = {true}
+          clearTextOnFocus = {true}
+          value = {""}
+          
+        />
         <Text style={styles.text}>{"\n"}Username: ExampleName</Text>
         <Text style={styles.text}>{"\n"}Email: user@example.com</Text>
         <Text style={styles.text}>{"\n"}Member since 9/28/2020</Text>
@@ -43,15 +60,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const profilePicPress = async () => {
-  let pic = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    allowsMultipleSelection: false,
-    aspect: [1,1],
-    allowsEditing: false,
-    exif: false,
-  });
-};
+// const profilePicPress = async () => {
+//   let pic = await ImagePicker.launchImageLibraryAsync({
+//     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+//     allowsMultipleSelection: false,
+//     aspect: [1,1],
+//     allowsEditing: false,
+//     exif: false,
+//   });
+// };
 
 
 
