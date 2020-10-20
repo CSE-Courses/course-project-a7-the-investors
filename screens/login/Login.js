@@ -5,6 +5,8 @@ import RegistrationScreen from "../registration/RegistrationScreen";
 import {AsyncStorage} from 'react-native';
 import Parse from 'parse/react-native.js';
 import * as SecureStore from "expo-secure-store";
+import { setEmail, setID, setUserName } from '../profile/Info';
+
 
 const height = Dimensions.get('window').height * 0.75;
 const widthfoot = Dimensions.get('window').width;
@@ -33,6 +35,8 @@ export default class Login extends React.Component {
             //console.log("TOKEN:   "  + user.get('sessionToken'))
             this.props.changeLoginStatus();
             sessionToken = user.get('sessionToken');
+            setUserName(this.state.email);
+            setEmail(this.state.password);
 
         }).catch(error => {
             if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
