@@ -24,7 +24,7 @@ const styles = {
         flexDirection: 'row',
         justifyContent: 'space-between',
         borderBottomWidth: 1,
-        borderColor: 'black',
+        borderColor: 'white',
         width: '95%',
         alignSelf: 'center',
         height: 45,

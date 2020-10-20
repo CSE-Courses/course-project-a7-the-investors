@@ -35,7 +35,7 @@ export default function TabNavigator() {
                     },
                 })}
                 tabBarOptions={{
-                    activeTintColor: 'tomato',
+                    activeTintColor: "#008000",
                     inactiveTintColor: 'gray',
                 }}>
                 <Tab.Screen name="Search" component={SearchScreen}/>

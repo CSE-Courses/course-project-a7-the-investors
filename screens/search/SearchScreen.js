@@ -25,6 +25,7 @@ const styles = {
   container: {
     flex: 1,
     flexDirection: "column",
+    backgroundColor: "#889b73",
   },
   content: {
     flex: 1,
