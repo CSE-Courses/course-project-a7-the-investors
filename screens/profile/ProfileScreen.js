@@ -39,7 +39,7 @@ export default class ProfileScreen extends React.Component {
     }, (error) => {
       if (typeof document !== 'undefined') document.write(`Error while deleting user: ${JSON.stringify(error)}`);
       console.error('Error while deleting user', error);
-      this.props.rmLoginStatus();
+    
     })
   });
   };
