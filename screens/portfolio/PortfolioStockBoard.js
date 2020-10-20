@@ -86,9 +86,9 @@ const styles = {
 
     },
     board: {
-        borderWidth: 1,
+        borderWidth: 3,
         borderRadius: 3,
-        borderColor: 'black',
+        borderColor: 'white',
         scrollEnabled: true,
         shadowColor: "#000",
         shadowOffset: {
@@ -119,7 +119,8 @@ const styles = {
         fontSize: 16
     },
     cashValue: {
-        fontSize: 43
+        fontSize: 43,
+        color: "#05375a"
     }
 
 };

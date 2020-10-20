@@ -134,9 +134,9 @@ const styles = {
     alignItems: "center",
   },
   board: {
-    borderWidth: 1,
+    borderWidth: 3,
     borderRadius: 3,
-    borderColor: "black",
+    borderColor: "white",
     scrollEnabled: true,
     shadowColor: "#000",
     shadowOffset: {
@@ -167,6 +167,7 @@ const styles = {
   },
   cashValue: {
     fontSize: 43,
+    color: "#05375a"
   },
   container: {
     marginTop: 10,

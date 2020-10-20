@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     marginVertical: "10%",
     // marginBottom: "10%",
     alignContent: "center",
+    backgroundColor: '#889b73'
   },
   textStyling: {
     fontSize: 16,

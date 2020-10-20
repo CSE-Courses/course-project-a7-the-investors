@@ -24,6 +24,6 @@ export default class AppHeader extends Component {
 
 const style = {
     appBar: {
-        backgroundColor: 'tomato'
+        backgroundColor: "white"
     }
 }
