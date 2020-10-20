@@ -4,6 +4,68 @@ import {Component} from "react";
 import StockRow from "./StockRow";
 
 export default class StockBoard extends Component {
+    constructor(props) {
+        super(props);
+        this.state ={
+            stocks: ['AAPL', 'TWTR', 'FB', 'NFLX', 'MSFT','F','GPRO','SBUX','BABA'],
+            cost: []
+        }
+
+
+    }
+
+    async componentDidMount() {
+
+
+        await this.getStarterStocks()
+    }
+
+
+
+    async getStarterStocks() {
+
+        const stockCost = [];
+        for (const stock of this.state.stocks) {
+            await fetch('https://finnhub.io/api/v1/quote?symbol=' + stock + '&token=bu317jf48v6pqlhnrjog')
+                .then(res => res.json())
+                .then(
+                    (result) => {
+                        //console.log(result);
+                        console.log(result.c);
+                        stockCost.push([stock,result.c])
+                    },
+                    // Note: it's important to handle errors here
+                    // instead of a catch() block so that we don't swallow
+                    // exceptions from actual bugs in components.
+                    (error) => {
+                        console.log(error)
+                    });
+        }
+        this.setState({
+            cost: stockCost
+
+        })
+
+        console.log("STOCK COST")
+        console.log(stockCost)
+        console.log("RECHED")
+        console.log("REACHED" + this.state.cost)
+
+
+//
+//         socket.addEventListener('open', function (event) {
+//             socket.send(JSON.stringify({'type': 'subscribe', 'symbol': 'AAPL'}))
+//
+//         });
+//
+// // Listen for messages
+//         socket.addEventListener('message', function (event) {
+//             console.log('Message from server ', event.data);
+//         });
+//
+
+    }
+
 
 
     render() {
@@ -29,26 +91,11 @@ export default class StockBoard extends Component {
 
                     <View style={[styles.board, {height: screenHeight * .57}]}>
                         <ScrollView>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
-                            <StockRow/>
+
+                            {this.state.cost.map(list => {
+                                return <StockRow key={list[0]} stockName={list[0]} stockCost={list[1]}/>
+                            })}
+
                         </ScrollView>
                     </View>
                 </View>
@@ -109,7 +156,7 @@ const styles = {
         marginTop: 15
     },
     cashLabel: {
-        fontsize: 16
+        fontSize: 16
     },
     cashValue: {
         fontSize: 43
