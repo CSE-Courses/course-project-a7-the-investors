@@ -2,9 +2,62 @@ import * as React from 'react';
 import {Dimensions, Text, View, ScrollView} from "react-native";
 import {Component} from "react";
 import PortfolioStockRow from "./PortfolioStockRow";
+import * as SecureStore from "expo-secure-store";
+import { AsyncStorage } from "react-native";
+import Parse from "parse/react-native.js";
 
 export default class PortFolioStockBoard extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            portfolioValue: 0
+        };
+    }
 
+    async getPortfolioValue() {
+        Parse.setAsyncStorage(AsyncStorage);
+        Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+        Parse.initialize(
+            "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
+            "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
+        );
+
+        let sessionToken;
+
+        SecureStore.getItemAsync("sessionToken").then((token) => {
+            sessionToken = token;
+            console.log("THIS IS THE TOKEN" + token);
+        });
+
+        const User = new Parse.User();
+        const query = new Parse.Query(User);
+
+        let value;
+        await Parse.User.me(sessionToken)
+            .then((user) => {
+                const currentUser = Parse.User.current();
+
+                console.log("LOOOGGGED" + currentUser.get('portfolioValue'));
+
+                value = currentUser.get('portfolioValue');
+                this.setState({portfolioValue: value});
+            })
+            .catch((error) => {
+                if (typeof document !== "undefined")
+                    document.write(
+                        `Error while logging in user: ${JSON.stringify(error)}`
+                    );
+                console.error("Error while logging in user", error);
+            });
+
+            if (value !== undefined || !value !== 0) {
+                console.log("REACHED::: " + value);
+                console.log("REACHED")
+
+                this.setState({portfolioValue: value})
+      
+            }
+        }
 
     render() {
         const screenHeight = Dimensions.get('window').height;
@@ -66,7 +119,7 @@ export default class PortFolioStockBoard extends Component {
 
                         </View>
                         <View>
-                            <Text style={styles.cashValue}> $43,312.32</Text>
+                            <Text style={styles.cashValue}> $10,000.00</Text>
                         </View>
                     </View>
                 </View>
