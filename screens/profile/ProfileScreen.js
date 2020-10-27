@@ -17,7 +17,8 @@ export default class ProfileScreen extends React.Component {
     super(props);
     this.state = {
       imageUrl: "",
-      submitUrl: ""
+      submitUrl: "",
+      mail: ""
     };
   }
 
@@ -46,6 +47,7 @@ export default class ProfileScreen extends React.Component {
     const query = new Parse.Query(User);
 
     let URL = '';
+    var emails = '';
     await Parse.User.me(sessionToken)
         .then((user) => {
           const currentUser = Parse.User.current();
@@ -53,7 +55,8 @@ export default class ProfileScreen extends React.Component {
           console.log("LOOOGGGED" + currentUser.get('profilePictureUrl'));
 
           URL = currentUser.get('profilePictureUrl');
-
+          emails = currentUser.get('email');
+          this.setState({mail: emails});
         })
         .catch((error) => {
           if (typeof document !== "undefined")
@@ -69,6 +72,7 @@ export default class ProfileScreen extends React.Component {
 
 
       this.setState({imageUrl: URL})
+      
     }
 
 
@@ -177,6 +181,9 @@ export default class ProfileScreen extends React.Component {
       );
     });
   }
+  getmail(){
+  
+  }
 
   render() {
     return (
@@ -201,7 +208,7 @@ export default class ProfileScreen extends React.Component {
           {"\n"} UserName: {getUserName()}
         </Text>
         <Text style={styles.text}>
-          {"\n"}Email: {getID()}
+          {"\n"}Email: {  this.state.mail}
         </Text>
         <Text style={styles.text}>{"\n"}Member since 9/28/2020</Text>
 
