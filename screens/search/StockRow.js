@@ -1,16 +1,24 @@
 import * as React from "react";
-import { Text, View } from "react-native";
+import { Text, View,TouchableOpacity } from "react-native";
 import { Component } from "react";
+
 
 export default class StockRow extends Component {
   constructor(props) {
     super(props);
   }
 
+  test(){
+    console.log("TRY TO CHANGE")
+  }
+
   render() {
     if (this.props.percentChange > 0) {
       return (
-        <View style={styles.container}>
+        <View style={styles.container}
+              onPress={() => this.props.navigation.navigate('StockTransaction',{
+                    item: 45
+                  })}>
           <Text style={styles.textStyling}> {this.props.stockName} </Text>
           <Text style={styles.positive}>
             {JSON.stringify(this.props.percentChange).substring(0, 4)}%
@@ -20,13 +28,22 @@ export default class StockRow extends Component {
       );
     } else {
       return (
+          <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('StockTransaction',{
+                item: 45
+              })}>
+
+
         <View style={styles.container}>
+
           <Text style={styles.textStyling}> {this.props.stockName} </Text>
           <Text style={styles.negative}>
             {JSON.stringify(this.props.percentChange).substring(0, 4)}%
           </Text>
           <Text style={styles.textStyling}> ${this.props.stockCost} </Text>
         </View>
+          </TouchableOpacity>
+
       );
     }
   }

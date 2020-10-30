@@ -92,17 +92,14 @@ export default class RegistrationScreen extends Component {
           console.error("Error while logging in user", error);
         });
 
-      await SecureStore.setItemAsync("sessionToken", sessionToken).then(() => {
+      await SecureStore.setItemAsync("sessionToken", JSON.stringify(sessionToken)).then(() => {
         console.log("SET ITEM");
       });
 
-      await SecureStore.setItemAsync("userId", userId).then(() => {
+      await SecureStore.setItemAsync("userId", JSON.stringify(userId)).then(() => {
         console.log("SET ITEM");
       });
 
-      SecureStore.getItemAsync("sessionToken").then((token) => {
-        console.log("THIS IS THE TOKEN" + token);
-      });
     }
   }
 

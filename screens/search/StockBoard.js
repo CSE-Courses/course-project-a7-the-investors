@@ -107,6 +107,7 @@ export default class StockBoard extends Component {
                     stockName={list[0]}
                     percentChange={list[1]}
                     stockCost={list[2]}
+                    navigation={this.props.navigation}
                   />
                 );
               })}

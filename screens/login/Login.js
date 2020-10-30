@@ -33,6 +33,8 @@ export default class Login extends React.Component {
 
         let sessionToken;
         let userId;
+        let stocks;
+        let cash;
         await Parse.User.logIn(this.state.email,this.state.password).then((user) => {
             // Do stuff after successful login
             if (typeof document !== 'undefined') document.write(`Logged in user: ${JSON.stringify(user)}`);
@@ -45,23 +47,30 @@ export default class Login extends React.Component {
             console.log(getpasswd());
             setEmail(Parse.User.current().id);
             userId = user.id;
+            stocks = user.get('stocks');
+            cash = user.get('cash')
 
 
         }).catch(error => {
             if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
             console.error('Error while logging in user', error);
         })
-        await SecureStore.setItemAsync('sessionToken', sessionToken).then(() => {
+        await SecureStore.setItemAsync('sessionToken', JSON.stringify(sessionToken)).then(() => {
             console.log("SET ITEM")
         })
 
-        await SecureStore.setItemAsync('userId', userId).then(() => {
+        await SecureStore.setItemAsync('userId', JSON.stringify(userId)).then(() => {
             console.log("SET ITEM")
         })
 
-        SecureStore.getItemAsync('sessionToken').then(token => {
-            console.log("THIS IS THE TOKEN" + token);
-        });
+        await SecureStore.setItemAsync('cash', JSON.stringify(cash)).then(() => {
+            console.log("SET ITEM: "+ cash)
+        })
+
+        await SecureStore.setItemAsync('stockList', JSON.stringify(stocks)).then(() => {
+            console.log("SET ITEM: " + stocks)
+        })
+
 
 
 

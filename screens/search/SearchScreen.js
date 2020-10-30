@@ -14,7 +14,7 @@ export default class SearchScreen extends Component {
       <View style={styles.container}>
         <AppHeader />
         <View style={styles.content}>
-          <StockBoard />
+          <StockBoard navigation={this.props.navigation} />
         </View>
       </View>
     );
