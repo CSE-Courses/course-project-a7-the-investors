@@ -1,14 +1,20 @@
 import * as React from "react";
 import { Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default class LeaderBoardRow extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.textStyling}> place </Text>
-        <Text style={styles.textStyling}> username </Text>
-        <Text style={styles.textStyling}> cash </Text>
-      </View>
+      <TouchableOpacity>
+        <View style={styles.container}>
+          <Text style={styles.textStyling}> {this.props.place} </Text>
+          <Text style={styles.textStyling}> {this.props.username} </Text>
+          <Text style={styles.textStyling}> ${this.props.cash} </Text>
+        </View>
+      </TouchableOpacity>
     );
   }
 }
@@ -19,7 +25,7 @@ const styles = {
     flexDirection: "row",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderColor: "black",
+    borderColor: "white",
     width: "95%",
     alignSelf: "center",
     height: 45,
@@ -27,5 +33,6 @@ const styles = {
   },
   textStyling: {
     fontSize: 20,
+    flex: 1,
   },
 };
