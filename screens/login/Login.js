@@ -60,6 +60,7 @@ export default class Login extends React.Component {
         })
 
         await SecureStore.setItemAsync('userId', JSON.stringify(userId)).then(() => {
+            console.log(userId)
             console.log("SET ITEM")
         })
 
