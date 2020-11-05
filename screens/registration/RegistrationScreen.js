@@ -22,6 +22,7 @@ import { Component } from "react";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import * as SecureStore from "expo-secure-store";
 
+
 const widthfoot = Dimensions.get("window").width;
 
 export default class RegistrationScreen extends Component {
@@ -32,79 +33,113 @@ export default class RegistrationScreen extends Component {
       email: "",
       password: "",
       confirmPassword: "",
+      nameError: "",
+      emailError: "",
+      passwordError: "",
+      passwordConfirmError: "",
     };
-  }
+  }ç
 
   async createAccount() {
-    Parse.setAsyncStorage(AsyncStorage);
-    Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
-    Parse.initialize(
-      "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
-      "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
-    );
+    if (this.validate){
+      Parse.setAsyncStorage(AsyncStorage);
+      Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+      Parse.initialize(
+        "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
+        "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
+      );
 
-    const user = new Parse.User();
-    // const user = new User();
+      const user = new Parse.User();
+      // const user = new User();
 
-    user.set("username", this.state.username);
-    user.set("email", this.state.email);
-    user.set("password", this.state.password);
-    let successfulLogin = false;
-    await user
-      .signUp()
-      .then((user) => {
-        if (typeof document !== "undefined")
-          document.write(`User signed up: ${JSON.stringify(user)}`);
-        console.log("User signed up", user);
-        successfulLogin = true;
-      })
-      .catch((error) => {
-        if (typeof document !== "undefined")
-          document.write(
-            `Error while signing up user: ${JSON.stringify(error)}`
-          );
-        console.error("Error while signing up user", error);
-      });
-
-    if (successfulLogin) {
-      let sessionToken;
-      let userId;
-
-      await Parse.User.logIn(this.state.email, this.state.password)
+      user.set("username", this.state.username);
+      user.set("email", this.state.email);
+      user.set("password", this.state.password);
+      let successfulLogin = false;
+      await user
+        .signUp()
         .then((user) => {
-          // Do stuff after successful login
           if (typeof document !== "undefined")
-            document.write(`Logged in user: ${JSON.stringify(user)}`);
-          //console.log("TOKEN:   "  + user.get('sessionToken'))
-
-          sessionToken = user.get("sessionToken");
-          userId = user.id;
-          setUserName(this.state.userName);
-          setpass(this.state.pass);
-          setEmail(Parse.User.current().id);
-          this.props.changeLoginStatus();
+            document.write(`User signed up: ${JSON.stringify(user)}`);
+          console.log("User signed up", user);
+          successfulLogin = true;
         })
         .catch((error) => {
           if (typeof document !== "undefined")
             document.write(
-              `Error while logging in user: ${JSON.stringify(error)}`
+              `Error while signing up user: ${JSON.stringify(error)}`
             );
-          console.error("Error while logging in user", error);
+          console.error("Error while signing up user", error);
         });
 
-      await SecureStore.setItemAsync("sessionToken", sessionToken).then(() => {
-        console.log("SET ITEM");
-      });
+      if (successfulLogin) {
+        let sessionToken;
+        let userId;
 
-      await SecureStore.setItemAsync("userId", userId).then(() => {
-        console.log("SET ITEM");
-      });
+        await Parse.User.logIn(this.state.email, this.state.password)
+          .then((user) => {
+            // Do stuff after successful login
+            if (typeof document !== "undefined")
+              document.write(`Logged in user: ${JSON.stringify(user)}`);
+            //console.log("TOKEN:   "  + user.get('sessionToken'))
 
-      SecureStore.getItemAsync("sessionToken").then((token) => {
-        console.log("THIS IS THE TOKEN" + token);
-      });
+            sessionToken = user.get("sessionToken");
+            userId = user.id;
+            setUserName(this.state.userName);
+            setpass(this.state.pass);
+            setEmail(Parse.User.current().id);
+            this.props.changeLoginStatus();
+          })
+          .catch((error) => {
+            if (typeof document !== "undefined")
+              document.write(
+                `Error while logging in user: ${JSON.stringify(error)}`
+              );
+            console.error("Error while logging in user", error);
+          });
+
+        await SecureStore.setItemAsync("sessionToken", sessionToken).then(() => {
+          console.log("SET ITEM");
+        });
+
+        await SecureStore.setItemAsync("userId", userId).then(() => {
+          console.log("SET ITEM");
+        });
+
+        SecureStore.getItemAsync("sessionToken").then((token) => {
+          console.log("THIS IS THE TOKEN" + token);
+        });
+      }
     }
   }
+
+  validate = () => {
+    let nameError = "";
+    let emailError = "";
+    let passwordError = "";
+    let passwordConfirmError = "";
+    if (!this.state.username){
+      nameError = "Username cannot be blank";
+    }
+    if (!this.state.email.includes("@")){
+      emailError = "Invalid email";
+    }
+    if (!this.state.username){
+      nameError = "Username cannot be blank";
+    }
+    charsNeeded = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/
+    if (!charsNeed.test(this.state.password) ){
+      passwordError = "Password must include 1 capital letter, lowercase, and number"
+    }
+    if (this.state.confirmPassword != this.state.password){
+      passwordConfirmError = "Passwords must match";
+    }
+    if (nameError || emailError || passwordError || confirmPasswordError){
+      this.setState({nameError, emailError, passwordError, passwordConfirmError});
+      return false;
+    }
+    return true;
+  };
 
   render() {
     return (
@@ -125,6 +160,7 @@ export default class RegistrationScreen extends Component {
             autoCapitalize="none"
             onChangeText={(text) => this.setState({ username: text })}
           />
+          <Text style = {styles.error}>{this.state.nameError}</Text>
 
           <Text style={styles.setInfo}>Email</Text>
           <TextInput
@@ -133,6 +169,7 @@ export default class RegistrationScreen extends Component {
             autoCapitalize="none"
             onChangeText={(text) => this.setState({ email: text })}
           />
+          <Text style = {styles.error}>{this.state.emailError}</Text>
 
           <Text style={styles.setInfo}>Password</Text>
           <TextInput
@@ -142,6 +179,7 @@ export default class RegistrationScreen extends Component {
             autoCapitalize="none"
             onChangeText={(text) => this.setState({ password: text })}
           />
+          <Text style = {styles.error}>{this.state.passwordError}</Text>
 
           <Text style={styles.setInfo}>Confirm Password</Text>
           <TextInput
@@ -149,8 +187,9 @@ export default class RegistrationScreen extends Component {
             secureTextEntry={true}
             placeholder="Your password"
             autoCapitalize="none"
-            onChangeText={(text) => this.setState({ confirmPassword: text })}
+            onChangeText={(text) => this.setState({ confirmPassword: text})}
           />
+          <Text style = {styles.error}>{this.state.passwordConfirmError}</Text>
 
           <TouchableOpacity
             style={styles.touchableButton}
@@ -198,6 +237,13 @@ styles = StyleSheet.create({
     marginHorizontal: 20,
     color: "#05375a",
     borderRadius: 5,
+  },
+  error: {
+    color: "red",
+    marginHorizontal: 20,
+    paddingTop: 0,
+    paddingBottom: 0,
+    fontSize: 12,
   },
   login: {
     justifyContent: "center",
