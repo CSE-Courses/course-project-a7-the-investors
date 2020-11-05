@@ -30,7 +30,7 @@ export default class Leaderboard extends React.Component {
     //temporary array
     const tempArray = [];
 
-    // Returns unique emails
+    // Returns unique (distinct) usernames
     query
       .distinct("username")
       .then((results) => {
@@ -40,7 +40,7 @@ export default class Leaderboard extends React.Component {
 
         //push all users to temporary array
         for (var i = 0; i < results.length; i++) {
-          tempArray.push([(i+1), results[i], "10000"]);
+          tempArray.push([i + 1, results[i], "10000"]);
         }
         //populate users with... users...
         this.setState({ users: tempArray });
@@ -54,21 +54,17 @@ export default class Leaderboard extends React.Component {
   }
 
   render() {
-    console.log("here are the users: " + this.state.users);
+    console.log("users and their data: " + this.state.users);
     return (
-      <View style={[styles.container]}>
-        <View style={{ backgroundColor: "grey" }}>
-            <Text style={{ fontSize: 48, textAlign: "center" }}>
-              Leaderboard
-            </Text>
-          </View>          
-          <View style={styles.boardContainer}>
-          <View style={styles.board}>
-          <ScrollView style={{ backgroundColor: "white" }}>
+        <SafeAreaView style={styles.boardContainer}>
+          <ScrollView style={styles.board}>
+            <View style={styles.banner}>
+              <Text style={styles.bannerText}>Leaderboard</Text>
+            </View>
             {this.state.users.map((list) => {
               return (
                 <LeaderBoardRow
-                  //key={list[0]}
+                  key={list[0]}
                   place={list[0]}
                   username={list[1]}
                   cash={list[2]}
@@ -76,30 +72,27 @@ export default class Leaderboard extends React.Component {
               );
             })}
           </ScrollView>
-          </View>
-          </View>
-      </View>
+        </SafeAreaView>
     );
   }
 }
 
 const styles = {
   boardContainer: {
+    //flex: 1,
     alignItems: "center",
+    marginTop: "3%",
+    height: "42%",
+    marginBottom: "10%",
   },
   board: {
-    borderWidth: 3,
-    borderRadius: 3,
-    borderColor: "white",
-    scrollEnabled: true,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    flex: 1,
+    width: "95%",
     shadowOpacity: 0.2,
     shadowRadius: 1.3,
-    elevation: 2,
+    //elevation: 2,
+    backgroundColor: "white",
+    borderRadius: 10,
   },
   container: {
     marginTop: 10,
@@ -108,7 +101,16 @@ const styles = {
   textStyling: {
     fontSize: 16,
   },
-  row: {
-    flexDirection: "row",
+  banner: {
+    flex: 1,
+    borderBottomWidth: 1,
+    borderColor: "grey",
+    width: "95%",
+    alignSelf: "center",
+  },
+  bannerText: {
+    //backgroundColor: "grey",
+    fontSize: 48,
+    textAlign: "center",
   },
 };
