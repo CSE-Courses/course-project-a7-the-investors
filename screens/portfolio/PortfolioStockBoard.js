@@ -10,10 +10,11 @@ export default class PortFolioStockBoard extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            portfolioValue: 0
+            portfolioValue: NaN
         };
     }
 
+    //Fetches a user's portfolio value from DB
     async getPortfolioValue() {
         Parse.setAsyncStorage(AsyncStorage);
         Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
@@ -40,7 +41,6 @@ export default class PortFolioStockBoard extends Component {
                 console.log("LOOOGGGED" + currentUser.get('portfolioValue'));
 
                 value = currentUser.get('portfolioValue');
-                this.setState({portfolioValue: value});
             })
             .catch((error) => {
                 if (typeof document !== "undefined")
@@ -50,14 +50,14 @@ export default class PortFolioStockBoard extends Component {
                 console.error("Error while logging in user", error);
             });
 
-            if (value !== undefined || !value !== 0) {
+            if (value !== undefined || !value !== NaN) {
                 console.log("REACHED::: " + value);
                 console.log("REACHED")
 
                 this.setState({portfolioValue: value})
       
             }
-        }
+    }
 
     render() {
         const screenHeight = Dimensions.get('window').height;

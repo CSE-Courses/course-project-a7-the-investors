@@ -9,6 +9,9 @@ import {
 } from "react-native";
 import { Component } from "react";
 import StockRow from "./StockRow";
+import * as SecureStore from "expo-secure-store";
+import { AsyncStorage } from "react-native";
+import Parse from "parse/react-native.js";
 const screenHeight = Dimensions.get("window").height;
 
 export default class StockBoard extends Component {
@@ -28,6 +31,7 @@ export default class StockBoard extends Component {
       ],
       row: [],
       change: [],
+      cash: NaN
     };
   }
 
@@ -76,6 +80,52 @@ export default class StockBoard extends Component {
     //         });
     //
   }
+
+  //Fetches a user's liquid cash from DB
+  async getCash() {
+    Parse.setAsyncStorage(AsyncStorage);
+    Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+    Parse.initialize(
+        "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
+        "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
+    );
+
+    let sessionToken;
+
+    SecureStore.getItemAsync("sessionToken").then((token) => {
+        sessionToken = token;
+        console.log("THIS IS THE TOKEN" + token);
+    });
+
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+
+    let value;
+    await Parse.User.me(sessionToken)
+      .then((user) => {
+        const currentUser = Parse.User.current();
+
+        console.log("LOOOGGGED" + currentUser.get('cash'));
+
+        value = currentUser.get('cash');
+      })
+      .catch((error) => {
+        if (typeof document !== "undefined")
+          document.write(
+            `Error while logging in user: ${JSON.stringify(error)}`
+          );
+        console.error("Error while logging in user", error);
+      });
+
+      if (value !== undefined || !value !== NaN) {
+        console.log("REACHED::: " + value);
+        console.log("REACHED")
+
+        this.setState({cash: value})
+  
+      }
+  }
+
 
   render() {
     return (
