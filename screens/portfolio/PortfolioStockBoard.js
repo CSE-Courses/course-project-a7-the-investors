@@ -12,6 +12,9 @@ export default class PortFolioStockBoard extends Component {
       amounts: [],
       totalBalance: 0,
       currentPrices: [],
+
+      //amounts * current prices
+      stockTotals: [],
     };
   }
   async componentDidMount() {
@@ -21,9 +24,6 @@ export default class PortFolioStockBoard extends Component {
 
   async getStocks() {
     let userId;
-    //accumulate balance in temporary variable
-    var tempBalance = 0;
-
     await SecureStore.getItemAsync("userId").then((id) => {
       userId = JSON.parse(id);
       console.log(userId);
@@ -46,11 +46,8 @@ export default class PortFolioStockBoard extends Component {
         amounts: tempAmounts,
       });
     });
-    this.setState({
-      totalBalance: tempBalance,
-    });
-    console.log("STOCK ARRAY: " + this.state.stocks);
-    console.log("TEMP AMOUNTS: " + this.state.amounts);
+    console.log("STOCKS: " + this.state.stocks);
+    console.log("AMOUNTS: " + this.state.amounts);
     this.getStockPrice();
   }
   async getStockPrice() {
@@ -78,7 +75,18 @@ export default class PortFolioStockBoard extends Component {
       currentPrices: tempPrices,
     });
     console.log("current prices: " + this.state.currentPrices);
+    //after all the current stock prices are fetched, run this method to do arithmetic
+    this.calculateStockTotals();
   }
+
+  calculateStockTotals(){
+      for(var i = 0; i<this.state.stocks.length; i++){
+        //multiply corresponding stock prices with amount of stock owned. Place into new array
+        this.state.stockTotals.push(this.state.currentPrices[i]*this.state.amounts[i]);
+      }
+      console.log("stock totals: " + this.state.stockTotals);
+  }
+
   render() {
     const screenHeight = Dimensions.get("window").height;
     return (
@@ -86,30 +94,6 @@ export default class PortFolioStockBoard extends Component {
         <View style={styles.boardContainer}>
           <View style={[styles.board, { height: screenHeight * 0.57 }]}>
             <ScrollView>
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
-              <PortfolioStockRow />
               <PortfolioStockRow />
             </ScrollView>
           </View>
