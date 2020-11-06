@@ -71,7 +71,7 @@ export default class PortFolioStockBoard extends Component {
               result.c * this.state.amounts[i],
             ]);
             //add to total
-            this.state.portfolioTotal += (result.c * this.state.amounts[i]);
+            this.state.portfolioTotal += result.c * this.state.amounts[i];
           },
           (error) => {
             console.log(error);
@@ -88,10 +88,13 @@ export default class PortFolioStockBoard extends Component {
   render() {
     const screenHeight = Dimensions.get("window").height;
     return (
-      <View style={[styles.container, { height: screenHeight * 0.6 }]}>
+      <View style={[styles.container, { height: screenHeight * 0.65 }]}>
         <View style={styles.boardContainer}>
-          <View style={[styles.board, { height: screenHeight * 0.57 }]}>
+          <View style={[styles.board, { height: screenHeight * 0.6 }]}>
             <ScrollView>
+              <View style={styles.banner}>
+                <Text style={styles.bannerText}>Stock Portfolio</Text>
+              </View>
               {this.state.row.map((list) => {
                 return (
                   <PortfolioStockRow
@@ -112,7 +115,13 @@ export default class PortFolioStockBoard extends Component {
               <Text style={styles.cashLabel}>Invested:</Text>
             </View>
             <View>
-              <Text style={styles.cashValue}> ${Math.round((this.state.portfolioTotal + Number.EPSILON) * 100) / 100} </Text>
+              <Text style={styles.cashValue}>
+                {" "}
+                $
+                {Math.round(
+                  (this.state.portfolioTotal + Number.EPSILON) * 100
+                ) / 100}{" "}
+              </Text>
             </View>
           </View>
         </View>
@@ -127,26 +136,24 @@ const styles = {
     alignItems: "center",
   },
   board: {
-    borderWidth: 3,
-    borderRadius: 3,
-    borderColor: "white",
-    scrollEnabled: true,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    flex: 1,
+    width: "95%",
     shadowOpacity: 0.2,
     shadowRadius: 1.3,
-    elevation: 2,
+    //elevation: 2,
+    backgroundColor: "white",
+    borderRadius: 10,
   },
-
-  headers: {
+  banner: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingRight: 25,
-    paddingLeft: 8,
+    borderBottomWidth: 1,
+    borderColor: "grey",
+    width: "95%",
+    alignSelf: "center",
+  },
+  bannerText: {
+    fontSize: 48,
+    textAlign: "center",
   },
   cashContainer: {
     flex: 1,
