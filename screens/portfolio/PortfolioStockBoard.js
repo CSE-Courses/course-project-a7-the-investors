@@ -10,16 +10,16 @@ export default class PortFolioStockBoard extends Component {
     this.state = {
       stocks: [],
       amounts: [],
-      totalBalance: 0,
-      currentPrices: [],
-
       //amounts * current prices
       stockTotals: [],
+      //for populating PortfolioStockRow
+      row: [],
+      //total portfolio value
+      portfolioTotal: 0,
     };
   }
   async componentDidMount() {
     await this.getStocks();
-    //await this.getStockPrice();
   }
 
   async getStocks() {
@@ -30,7 +30,6 @@ export default class PortFolioStockBoard extends Component {
     });
     await SecureStore.getItemAsync("stockList").then((stocks) => {
       this.stockArray = JSON.parse(stocks);
-      console.log("STOCKS" + stocks);
       const tempStocks = [];
       const tempAmounts = [];
       //go through array of stocks and amount of stock owned and seperate them into 2 different arrays
@@ -52,9 +51,9 @@ export default class PortFolioStockBoard extends Component {
   }
   async getStockPrice() {
     const tempPrices = [];
+    const tempRow = [];
     for (var i = 0; i < this.state.stocks.length; i++) {
-        console.log(this.state.stocks[i]);
-        await fetch(
+      await fetch(
         "https://finnhub.io/api/v1/quote?symbol=" +
           this.state.stocks[i] +
           "&token=bu317jf48v6pqlhnrjog"
@@ -64,7 +63,15 @@ export default class PortFolioStockBoard extends Component {
           (result) => {
             //return current stock price
             tempPrices.push(result.c);
-            console.log(result.c);
+            //for use in Portfolio Stock Rows
+            tempRow.push([
+              this.state.stocks[i],
+              ((result.c - result.pc) / result.pc) * 100,
+              this.state.amounts[i],
+              result.c * this.state.amounts[i],
+            ]);
+            //add to total
+            this.state.portfolioTotal += (result.c * this.state.amounts[i]);
           },
           (error) => {
             console.log(error);
@@ -72,19 +79,10 @@ export default class PortFolioStockBoard extends Component {
         );
     }
     this.setState({
-      currentPrices: tempPrices,
+      row: tempRow,
     });
-    console.log("current prices: " + this.state.currentPrices);
-    //after all the current stock prices are fetched, run this method to do arithmetic
-    this.calculateStockTotals();
-  }
-
-  calculateStockTotals(){
-      for(var i = 0; i<this.state.stocks.length; i++){
-        //multiply corresponding stock prices with amount of stock owned. Place into new array
-        this.state.stockTotals.push(this.state.currentPrices[i]*this.state.amounts[i]);
-      }
-      console.log("stock totals: " + this.state.stockTotals);
+    console.log("rows: " + this.state.row);
+    console.log("portfolio total: " + this.state.portfolioTotal);
   }
 
   render() {
@@ -94,7 +92,17 @@ export default class PortFolioStockBoard extends Component {
         <View style={styles.boardContainer}>
           <View style={[styles.board, { height: screenHeight * 0.57 }]}>
             <ScrollView>
-              <PortfolioStockRow />
+              {this.state.row.map((list) => {
+                return (
+                  <PortfolioStockRow
+                    key={list[0]}
+                    stock={list[0]}
+                    percentChange={list[1]}
+                    amount={list[2]}
+                    total={list[3]}
+                  />
+                );
+              })}
             </ScrollView>
           </View>
         </View>
@@ -104,7 +112,7 @@ export default class PortFolioStockBoard extends Component {
               <Text style={styles.cashLabel}>Invested:</Text>
             </View>
             <View>
-              <Text style={styles.cashValue}> $43,312.32</Text>
+              <Text style={styles.cashValue}> ${Math.round((this.state.portfolioTotal + Number.EPSILON) * 100) / 100} </Text>
             </View>
           </View>
         </View>
