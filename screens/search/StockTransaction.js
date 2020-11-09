@@ -1,10 +1,11 @@
 import * as React from "react";
-import {Dimensions, Text, View, TextInput, TouchableOpacity, AsyncStorage} from "react-native";
+import {Dimensions, Text, View, TextInput, TouchableOpacity, AsyncStorage, } from "react-native";
 import {Component} from "react";
 import StockBoard from "./StockBoard";
 import AppHeader from "../../navigation/AppHeader";
 import * as SecureStore from "expo-secure-store";
 import Parse from "parse/react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default class StockTransaction extends Component {
 
@@ -74,18 +75,27 @@ export default class StockTransaction extends Component {
             volumeCost: tempVolumeCost
         });
     }
-
-    async confirmBuyStock() {
+    //if BorS is a 0 then sell 1 then buy
+    async confirmStock(BorS) {
         const stockToBuy = this.props.route.params.stockName;
         let indexOfStock = this.stockArray.indexOf(stockToBuy);
         if (this.stockArray.includes(stockToBuy)) {
-
-            this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) + parseInt(this.state.amountOfStock);
-        } else {
+            if(BorS == 1){
+                this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) + parseInt(this.state.amountOfStock);
+            }
+            if(BorS == 0){
+                if(this.stockArray[indexOfStock+1] < this.state.amountOfStock){
+                    this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) - parseInt(this.state.amountOfStock);
+                }
+                if(this.stockArray[indexOfStock+1] = this.state.amountOfStock){
+                    this.stockArray.splice(indexOfStock,2);
+                }
+            }
+        } else if(BorS==1){
             this.stockArray.push(stockToBuy);
             this.stockArray.push(this.state.amountOfStock)
             indexOfStock = this.stockArray.length - 2;
-        }
+        } 
         this.setState({
             amountOfStockOwned: this.stockArray[indexOfStock + 1]
         })
@@ -151,8 +161,9 @@ export default class StockTransaction extends Component {
         console.log(this.props.route.params.item)
 
         let percentage;
-
-        if (this.props.route.params.percentChange > 0) {
+        
+        
+            if (this.props.route.params.percentChange > 0) {
             percentage = <Text style={styles.positive}>
                 {JSON.stringify(this.props.route.params.percentChange).substring(0, 4)}%
             </Text>
@@ -163,35 +174,56 @@ export default class StockTransaction extends Component {
             </Text>
 
         }
+        
+        
 
         return (
             <View style={styles.wrapper}>
                 <View style={styles.container}>
-                    <View style={styles.row}>
-                        <Text style={styles.textStyling}> {this.props.route.params.stockName} </Text>
-                        {percentage}
-                        <Text style={styles.textStyling}> ${this.props.route.params.stockCost} </Text>
-                    </View>
-                    <View style={styles.controller}>
+                    
+                    
+                        <Text style={styles.textStyling}> Symbol: {this.props.route.params.stockName} </Text>
+                        
+                        <Text style={styles.textStyling}> Current Price: ${this.props.route.params.stockCost} </Text>
+
+                        <Text style={styles.textStyling}>Percent Change Today: {percentage} </Text>
+                    
+                    <View style={styles.input}>
+                    
+                    
                         <TextInput
                             keyboardType='numeric'
-                            placeholder={"Input amount"}
+                            placeholder={"Input amount to trade"}
                             onChange={(text) => {
                                 this.calculateCost(text.nativeEvent.text);
                             }}>
                         </TextInput>
-                        <TouchableOpacity style={styles.buttonBuy}
-                        onPress={() => this.confirmBuyStock()}>
-                            <Text>
-                                Buy
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View>
+                        
+                        
+                    </View >
+
+                    <View style={styles.input}>
                         <Text> Cost of Volume: {this.state.volumeCost}</Text>
                         <Text> Cash: {this.state.cash}</Text>
                         <Text> Currently Own: {this.state.amountOfStockOwned}</Text>
                     </View>
+
+                    <View style={styles.buttons}>
+                    <TouchableOpacity style={styles.buttonBuy}
+                        onPress={() => this.confirmStock(1)}>
+                            <Text>
+                                Buy
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonSell}
+                        onPress={() => this.confirmStock(0)}>
+                            <Text>
+                                Sell
+                            </Text>
+                        </TouchableOpacity>
+
+                    </View>
+                    
                 </View>
             </View>
 
@@ -212,7 +244,8 @@ const styles = {
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
-        alignSelf: 'center'
+        alignSelf: 'center',
+        
 
     },
     row: {
@@ -223,12 +256,13 @@ const styles = {
         borderColor: "white",
         width: "95%",
         alignSelf: "center",
-        height: 45,
+        height: 20,
         marginTop: 8,
     },
     textStyling: {
         fontSize: 20,
-        flex: 1,
+        paddingTop: 10,
+        paddingBottom: 10,
     },
     positive: {
         fontSize: 20,
@@ -247,9 +281,16 @@ const styles = {
         alignItems: 'center',
 
     },
+    input: {
+        flex: 1/2,
+        paddingTop: 50,
+        paddingBottom: 10,
+        
+        alignItems: 'center',
+    },
     buttonBuy: {
         elevation: 8,
-        backgroundColor: "#fff",
+        backgroundColor: "#008000",
         borderRadius: 10,
         paddingVertical: 12,
         paddingHorizontal: 12,
@@ -257,4 +298,25 @@ const styles = {
 
 
     },
+    buttonSell: {
+        elevation: 8,
+        backgroundColor: "#FF0000",
+        borderRadius: 10,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        marginTop: 20,
+    },
+    buttons: {
+        flex: 1/4,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        borderBottomWidth: 1,
+        borderColor: "white",
+        width: "95%",
+        alignSelf: "center",
+        height: 20,
+        marginTop: 8,
+        paddingHorizontal: 40,
+        paddingBottom: 50,
+    }
 };
