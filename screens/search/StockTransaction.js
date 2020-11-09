@@ -1,11 +1,11 @@
 import * as React from "react";
-import {Dimensions, Text, View, TextInput, TouchableOpacity, AsyncStorage, } from "react-native";
+import {Dimensions, Text, View, TextInput, TouchableOpacity, AsyncStorage,} from "react-native";
 import {Component} from "react";
 import StockBoard from "./StockBoard";
 import AppHeader from "../../navigation/AppHeader";
 import * as SecureStore from "expo-secure-store";
 import Parse from "parse/react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 export default class StockTransaction extends Component {
 
@@ -16,9 +16,10 @@ export default class StockTransaction extends Component {
         super(props);
         this.state = {
             cash: 0,
-            amountOfStock: 0,
+            amountOfStockTransaction: 0,
             volumeCost: 0,
             amountOfStockOwned: 0,
+            insufficientFunds: false
         }
     }
 
@@ -47,11 +48,11 @@ export default class StockTransaction extends Component {
         if (this.stockArray === undefined || this.stockArray === null) {
             console.log("UNDEFINED ArRAy")
             this.stockArray = [];
-        }else{
+        } else {
             let indexOfStock = this.stockArray.indexOf(this.props.route.params.stockName);
-            if ( indexOfStock> -1) {
+            if (indexOfStock > -1) {
                 this.setState({
-                    amountOfStockOwned: this.stockArray[indexOfStock + 1]
+                    amountOfStockOwned: parseInt(this.stockArray[indexOfStock + 1])
                 });
             }
         }
@@ -61,43 +62,110 @@ export default class StockTransaction extends Component {
         console.log("reacheddddd")
 
 
-        this.setState({cash: cash})
+        this.setState({cash: parseInt(cash)})
 
     }
 
+
     calculateCost(evt) {
-        console.log(evt)
-        console.log("REACHED")
+        console.log("EVT" + evt)
         let tempVolumeCost = parseInt(this.props.route.params.stockCost) * parseInt(evt);
 
         this.setState({
-            amountOfStock: evt,
+            amountOfStockTransaction: parseInt(evt),
             volumeCost: tempVolumeCost
         });
     }
-    //if BorS is a 0 then sell 1 then buy
-    async confirmStock(BorS) {
+
+    stockOwnedRender() {
+        if (this.state.insufficientFunds) {
+            return (
+                <View style={styles.input}>
+                    <Text> INSUFFICIENT FUNDS</Text>
+                    <Text> Cost of Volume: {this.state.volumeCost}</Text>
+                    <Text> Cash: {this.state.cash}</Text>
+                    <Text> Currently Own: {this.state.amountOfStockOwned}</Text>
+                </View>
+            )
+        } else {
+            return (
+                <View style={styles.input}>
+                    <Text> Cost of Volume: {this.state.volumeCost}</Text>
+                    <Text> Cash: {this.state.cash}</Text>
+                    <Text> Currently Own: {this.state.amountOfStockOwned}</Text>
+                </View>
+            );
+        }
+
+
+    }
+
+    async confirmTransaction(buy) {
+        /*
+        if(BorS == 1){
+                        this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) + parseInt(this.state.amountOfStock);
+                    }
+                    if(BorS == 0){
+                        if(this.stockArray[indexOfStock+1] < this.state.amountOfStock){
+                            this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) - parseInt(this.state.amountOfStock);
+                        }
+                        if(this.stockArray[indexOfStock+1] = this.state.amountOfStock){
+                            this.stockArray.splice(indexOfStock,2);
+                        }
+                    }
+                } else if(BorS==1){
+                    this.stockArray.push(stockToBuy);
+                    this.stockArray.push(this.state.amountOfStock)
+                    indexOfStock = this.stockArray.length - 2;
+                }
+         */
+
+        if (this.state.amountOfStockTransaction < 0) {
+            return;
+        }
+        //true = buy, false = sell
         const stockToBuy = this.props.route.params.stockName;
         let indexOfStock = this.stockArray.indexOf(stockToBuy);
-        if (this.stockArray.includes(stockToBuy)) {
-            if(BorS == 1){
-                this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) + parseInt(this.state.amountOfStock);
-            }
-            if(BorS == 0){
-                if(this.stockArray[indexOfStock+1] < this.state.amountOfStock){
-                    this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) - parseInt(this.state.amountOfStock);
-                }
-                if(this.stockArray[indexOfStock+1] = this.state.amountOfStock){
-                    this.stockArray.splice(indexOfStock,2);
-                }
-            }
-        } else if(BorS==1){
+        let updatedCash = 0;
+        //Make stock to buy negative in order to sell and check if they are selling a bound of what they own
+        console.log(this.state)
+        if (!buy && this.state.amountOfStockOwned > 0 && this.state.amountOfStockOwned >= this.state.amountOfStockTransaction) {
+            let selling = this.state.amountOfStockTransaction * -1
+            await this.setState({
+                amountOfStockTransaction: selling
+            });
+            updatedCash = this.state.volumeCost + this.state.cash;
+
+            console.log("SELLING : " + selling)
+            console.log("SELLING STATE: " + this.state.amountOfStockTransaction)
+            //If selling more than owned do nothing
+        } else if (!buy) {
+            console.log("DO NOTHING")
+            return;
+        }
+        //If buying more than funds do nothing
+        if (buy && this.state.volumeCost > this.state.cash) {
+            console.log("DO NOTHING")
+            return
+        } else if (buy) {
+            updatedCash = this.state.cash - this.state.volumeCost
+        }
+
+        //If stock array includes array update value in place
+        if (indexOfStock > -1) {
+            console.log("AMOUNT OF STOCK: " + this.state.amountOfStockTransaction);
+            this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) + parseInt(this.state.amountOfStockTransaction);
+        } else {
+            //If not add ticker and amount buying
             this.stockArray.push(stockToBuy);
-            this.stockArray.push(this.state.amountOfStock)
+            this.stockArray.push(this.state.amountOfStockTransaction);
             indexOfStock = this.stockArray.length - 2;
-        } 
+        }
+
+        //Update total of amount of stock owned
         this.setState({
-            amountOfStockOwned: this.stockArray[indexOfStock + 1]
+            amountOfStockOwned: this.stockArray[indexOfStock + 1],
+            cash: updatedCash
         })
 
         Parse.setAsyncStorage(AsyncStorage);
@@ -122,12 +190,13 @@ export default class StockTransaction extends Component {
                 const currentUser = Parse.User.current();
                 let ownedStocks = this.stockArray;
                 currentUser.set("stocks", ownedStocks);
+                currentUser.set("cash", updatedCash);
                 user
                     .save()
                     .then((response) => {
                         if (typeof document !== "undefined")
                             document.write(`Updated user: ${JSON.stringify(response)}`);
-                        console.log("Updated user", response);
+                        //console.log("Updated user", response);
                         //this.setState({imageUrl: URL})
                     })
                     .catch((error) => {
@@ -152,18 +221,22 @@ export default class StockTransaction extends Component {
                 console.error("Error while logging in user", error);
             });
 
+        //Update array of stocks owned
         await SecureStore.setItemAsync('stockList', JSON.stringify(this.stockArray)).then(() => {
-            console.log("SET ITEM: " + this.stockArray)
+            //console.log("SET ITEM: " + this.stockArray)
+        })
+
+        await SecureStore.setItemAsync('cash', JSON.stringify(updatedCash)).then(() => {
+            //console.log("SET ITEM: " + this.stockArray)
         })
     }
 
     render() {
-        console.log(this.props.route.params.item)
 
         let percentage;
-        
-        
-            if (this.props.route.params.percentChange > 0) {
+
+
+        if (this.props.route.params.percentChange > 0) {
             percentage = <Text style={styles.positive}>
                 {JSON.stringify(this.props.route.params.percentChange).substring(0, 4)}%
             </Text>
@@ -174,23 +247,22 @@ export default class StockTransaction extends Component {
             </Text>
 
         }
-        
-        
+
 
         return (
             <View style={styles.wrapper}>
                 <View style={styles.container}>
-                    
-                    
-                        <Text style={styles.textStyling}> Symbol: {this.props.route.params.stockName} </Text>
-                        
-                        <Text style={styles.textStyling}> Current Price: ${this.props.route.params.stockCost} </Text>
 
-                        <Text style={styles.textStyling}>Percent Change Today: {percentage} </Text>
-                    
+
+                    <Text style={styles.textStyling}> Symbol: {this.props.route.params.stockName} </Text>
+
+                    <Text style={styles.textStyling}> Current Price: ${this.props.route.params.stockCost} </Text>
+
+                    <Text style={styles.textStyling}>Percent Change Today: {percentage} </Text>
+
                     <View style={styles.input}>
-                    
-                    
+
+
                         <TextInput
                             keyboardType='numeric'
                             placeholder={"Input amount to trade"}
@@ -198,32 +270,28 @@ export default class StockTransaction extends Component {
                                 this.calculateCost(text.nativeEvent.text);
                             }}>
                         </TextInput>
-                        
-                        
-                    </View >
 
-                    <View style={styles.input}>
-                        <Text> Cost of Volume: {this.state.volumeCost}</Text>
-                        <Text> Cash: {this.state.cash}</Text>
-                        <Text> Currently Own: {this.state.amountOfStockOwned}</Text>
+
                     </View>
+                    {this.stockOwnedRender()}
+
 
                     <View style={styles.buttons}>
-                    <TouchableOpacity style={styles.buttonBuy}
-                        onPress={() => this.confirmStock(1)}>
+                        <TouchableOpacity style={styles.buttonBuy}
+                                          onPress={() => this.confirmTransaction(true)}>
                             <Text>
                                 Buy
                             </Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.buttonSell}
-                        onPress={() => this.confirmStock(0)}>
+                                          onPress={() => this.confirmTransaction(false)}>
                             <Text>
                                 Sell
                             </Text>
                         </TouchableOpacity>
 
                     </View>
-                    
+
                 </View>
             </View>
 
@@ -245,7 +313,7 @@ const styles = {
         flexDirection: 'column',
         justifyContent: 'center',
         alignSelf: 'center',
-        
+
 
     },
     row: {
@@ -282,10 +350,10 @@ const styles = {
 
     },
     input: {
-        flex: 1/2,
+        flex: 1 / 2,
         paddingTop: 50,
         paddingBottom: 10,
-        
+
         alignItems: 'center',
     },
     buttonBuy: {
@@ -307,7 +375,7 @@ const styles = {
         marginTop: 20,
     },
     buttons: {
-        flex: 1/4,
+        flex: 1 / 4,
         flexDirection: "row",
         justifyContent: "space-between",
         borderBottomWidth: 1,
