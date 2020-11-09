@@ -62,19 +62,28 @@ export default class StockTransaction extends Component {
         console.log("reacheddddd")
 
 
-        this.setState({cash: parseInt(cash)})
+        this.setState({cash: parseFloat(cash)})
 
     }
 
 
     calculateCost(evt) {
-        console.log("EVT" + evt)
-        let tempVolumeCost = parseInt(this.props.route.params.stockCost) * parseInt(evt);
 
-        this.setState({
-            amountOfStockTransaction: parseInt(evt),
-            volumeCost: tempVolumeCost
-        });
+        let tempVolumeCost = parseFloat(this.props.route.params.stockCost) * parseFloat(evt);
+        console.log("EVT REACHED")
+        if (!isNaN(tempVolumeCost)) {
+
+            this.setState({
+                amountOfStockTransaction: parseFloat(evt),
+                volumeCost: tempVolumeCost.toFixed(2)
+            });
+        } else {
+            this.setState({
+                amountOfStockTransaction: 0,
+                volumeCost: 0
+            })
+        }
+
     }
 
     stockOwnedRender() {
@@ -134,7 +143,7 @@ export default class StockTransaction extends Component {
             await this.setState({
                 amountOfStockTransaction: selling
             });
-            updatedCash = this.state.volumeCost + this.state.cash;
+            updatedCash = parseFloat(this.state.volumeCost) + this.state.cash;
 
             console.log("SELLING : " + selling)
             console.log("SELLING STATE: " + this.state.amountOfStockTransaction)
@@ -148,7 +157,7 @@ export default class StockTransaction extends Component {
             console.log("DO NOTHING")
             return
         } else if (buy) {
-            updatedCash = this.state.cash - this.state.volumeCost
+            updatedCash = this.state.cash - parseFloat(this.state.volumeCost);
         }
 
         //If stock array includes array update value in place
@@ -163,7 +172,7 @@ export default class StockTransaction extends Component {
         }
 
         //Update total of amount of stock owned
-        this.setState({
+        await this.setState({
             amountOfStockOwned: this.stockArray[indexOfStock + 1],
             cash: updatedCash
         })
