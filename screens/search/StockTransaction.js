@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Dimensions, Text, View, TextInput, TouchableOpacity, AsyncStorage, } from "react-native";
+import {Dimensions, Text, View, TextInput, TouchableOpacity, AsyncStorage, ScrollView, Alert } from "react-native";
 import {Component} from "react";
 import StockBoard from "./StockBoard";
 import AppHeader from "../../navigation/AppHeader";
@@ -48,7 +48,8 @@ export default class StockTransaction extends Component {
             console.log("UNDEFINED ArRAy")
             this.stockArray = [];
         }else{
-            let indexOfStock = this.stockArray.indexOf(this.props.route.params.stockName);
+            let indexOfStock = this.stockArray.indexOf(this.props.route.params.stockName.toUpperCase());
+            console.log(indexOfStock);
             if ( indexOfStock> -1) {
                 this.setState({
                     amountOfStockOwned: this.stockArray[indexOfStock + 1]
@@ -77,26 +78,54 @@ export default class StockTransaction extends Component {
     }
     //if BorS is a 0 then sell 1 then buy
     async confirmStock(BorS) {
-        const stockToBuy = this.props.route.params.stockName;
+        const stockToBuy = this.props.route.params.stockName.toUpperCase();
         let indexOfStock = this.stockArray.indexOf(stockToBuy);
         if (this.stockArray.includes(stockToBuy)) {
             if(BorS == 1){
-                this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) + parseInt(this.state.amountOfStock);
+                if(this.state.cash >= parseInt(this.state.volumeCost)){
+                    this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) + parseInt(this.state.amountOfStock);
+                }
+                else{
+                    Alert.alert("Sorry You Don't Have Enough Money",
+                    "You may consider getting a day job",
+                    [
+                      
+                      { text: "OK", onPress: () => console.log("OK Pressed") }
+                    ],
+                    { cancelable: false });
+                }
+                
             }
             if(BorS == 0){
-                if(this.stockArray[indexOfStock+1] < this.state.amountOfStock){
+                
+                if(this.stockArray[indexOfStock+1] <= this.state.amountOfStock){
                     this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) - parseInt(this.state.amountOfStock);
                 }
-                if(this.stockArray[indexOfStock+1] = this.state.amountOfStock){
-                    this.stockArray.splice(indexOfStock,2);
+                if(this.stockArray[indexOfStock+1] > this.state.amountOfStock){
+                    
+                    Alert.alert("You Don't Own That Many Stocks",
+                    "  ",
+                    [
+                       
+                      { text: "OK", onPress: () => console.log("so what")}
+                    ],
+                    { cancelable: false });
+                    
                 }
             }
         } else if(BorS==1){
             this.stockArray.push(stockToBuy);
-            this.stockArray.push(this.state.amountOfStock)
+            this.stockArray.push(this.state.amountOfStock);
             indexOfStock = this.stockArray.length - 2;
+        }else{
+            Alert.alert("You Don't Own This stock","  ",
+            [
+               { text: "OK", onPress: () => console.log("so what")}
+            ],
+            { cancelable: false });
         } 
         this.setState({
+            
             amountOfStockOwned: this.stockArray[indexOfStock + 1]
         })
 
@@ -190,15 +219,18 @@ export default class StockTransaction extends Component {
                     
                     <View style={styles.input}>
                     
-                    
-                        <TextInput
-                            keyboardType='numeric'
-                            placeholder={"Input amount to trade"}
-                            onChange={(text) => {
+                        <ScrollView contentContainerStyle={{flexGrow: 1}}
+                            keyboardShouldPersistTaps='handled'>
+  
+
+                            <TextInput
+                                keyboardType='numeric'
+                                placeholder={"Input amount to trade"}
+                                onChange={(text) => {
                                 this.calculateCost(text.nativeEvent.text);
-                            }}>
-                        </TextInput>
-                        
+                                }}>
+                            </TextInput>
+                        </ScrollView>
                         
                     </View >
 
