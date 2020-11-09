@@ -28,7 +28,6 @@ export default class DisplayCash extends React.Component {
       console.error("Error retrieving cash", error);
     });
     this.setState({ cash: cash});
-    console.log("test commas: ");
   }
 
   render() {

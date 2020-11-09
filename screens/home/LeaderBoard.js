@@ -8,7 +8,9 @@ export default class Leaderboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      users: [],
+      ids: [],
+      //for use in LeaderBoardRow
+      userRow: [],
     };
   }
 
@@ -25,54 +27,91 @@ export default class Leaderboard extends React.Component {
     );
     //need this key to fetch all users
     Parse.masterKey = "kZuJip8wEQ3vxC0OUMFCV0JTk52jZbihe17V2bH9";
-    const query = new Parse.Query("User");
 
-    //temporary array
-    const tempArray = [];
-
-    // Returns unique (distinct) usernames
-    query
-      .distinct("username")
+    const idQuery = new Parse.Query("User");
+    //returns unique user ids
+    idQuery
+      .distinct("objectId")
       .then((results) => {
         if (typeof document !== "undefined")
-          document.write(`Unique usernames: ${JSON.stringify(results)}`);
-        console.log(`Unique usernames: ${JSON.stringify(results)}`);
+          document.write(`Unique ids: ${JSON.stringify(results)}`);
+        //console.log(`Unique ids: ${JSON.stringify(results)}`);
 
-        //push all users to temporary array
-        for (var i = 0; i < results.length; i++) {
-          tempArray.push([i + 1, results[i], "10000"]);
-        }
-        //populate users with... users...
-        this.setState({ users: tempArray });
-        //console.log("users: " + this.state.users);
+        //populate id array with... users...
+        this.setState({ ids: results });
+        console.log("ids: " + this.state.ids);
+        //run method to fetch users corresponding cash amount
+        this.getUsernameAndCash();
       })
       .catch((error) => {
         if (typeof document !== "undefined")
-          document.write(`Error retrieving users: ${JSON.stringify(error)}`);
-        console.error("Error retrieving users", error);
+          document.write(`Error retrieving ids: ${JSON.stringify(error)}`);
+        console.error("Error retrieving ids", error);
       });
   }
 
+  async getUsernameAndCash() {
+    const tempRowArray = [];
+    const tempPair = [];
+    //go through all unique IDs
+    for (var i = 0; i < this.state.ids.length; i++) {
+      //use query to find respective IDs information
+      const query = new Parse.Query("User");
+      await query.get(this.state.ids[i]).then(
+        (user) => {
+          if (typeof document !== "undefined")
+            document.write(`User found: ${JSON.stringify(user.get("cash"))}`);
+          //console.log("User found", user.get("username"), user.get("cash"));
+
+          //create a pair of a username and its corresponding cash amount
+          if (user.get("cash") == undefined) {
+            tempPair.push([user.get("username"), 0]);
+          } else {
+            tempPair.push([user.get("username"), user.get("cash")]);
+          }
+        },
+        (error) => {
+          if (typeof document !== "undefined")
+            document.write(
+              `Error while fetching user: ${JSON.stringify(error)}`
+            );
+          console.error("Error while fetching user", error);
+        }
+      );
+    }
+    //sort pairs in descending order for cash amounts
+    tempPair.sort(function (a, b) {
+      return b[1] - a[1];
+    });
+    //add place value for leaderboard row
+    for(var i = 0; i < tempPair.length; i++){
+      tempRowArray.push([i+1, tempPair[i][0], tempPair[i][1]]);
+    }
+    this.setState({
+      userRow: tempRowArray,
+    });
+    console.log("userRow: " + this.state.userRow);
+  }
+  
   render() {
-    console.log("users and their data: " + this.state.users);
     return (
-        <SafeAreaView style={styles.boardContainer}>
-          <ScrollView style={styles.board}>
-            <View style={styles.banner}>
-              <Text style={styles.bannerText}>Leaderboard</Text>
-            </View>
-            {this.state.users.map((list) => {
-              return (
-                <LeaderBoardRow
-                  key={list[0]}
-                  place={list[0]}
-                  username={list[1]}
-                  cash={list[2]}
-                />
-              );
-            })}
-          </ScrollView>
-        </SafeAreaView>
+      <SafeAreaView style={styles.boardContainer}>
+        <ScrollView style={styles.board}>
+          <View style={styles.banner}>
+            <Text style={styles.bannerText}>Leaderboard</Text>
+          </View>
+          {this.state.userRow.map((list) => {
+            return (
+              <LeaderBoardRow
+                key={list[0]}
+                place={list[0]}
+                username={list[1]}
+                cash={list[2]}
+              />
+            );
+          })}
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
