@@ -24,6 +24,7 @@ export default class Login extends React.Component {
     }
     
     async login(){
+        console.log("LOGGIN IN")
         Parse.setAsyncStorage(AsyncStorage);
         Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
         Parse.initialize(
@@ -44,33 +45,37 @@ export default class Login extends React.Component {
             setUserName(this.state.email);
             console.log(getUserName());
             setpass(this.state.password);
-            console.log(getpasswd());
             setEmail(Parse.User.current().id);
             userId = user.id;
             stocks = user.get('stocks');
             cash = user.get('cash')
-
 
         }).catch(error => {
             if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
             console.error('Error while logging in user', error);
         })
         await SecureStore.setItemAsync('sessionToken', JSON.stringify(sessionToken)).then(() => {
-            console.log("SET ITEM")
+            console.log("SESSION TOKEN: " + sessionToken)
         })
 
         await SecureStore.setItemAsync('userId', JSON.stringify(userId)).then(() => {
-            console.log(userId)
-            console.log("SET ITEM")
+            console.log("USERID: " + userId)
         })
 
         await SecureStore.setItemAsync('cash', JSON.stringify(cash)).then(() => {
-            console.log("SET ITEM: "+ cash)
+            console.log("CASH:" + cash)
         })
 
+        console.log("THIS IS STOCKS: ")
+        console.log(stocks)
+
+        if (stocks === undefined) {
+            stocks = [];
+        }
+
         await SecureStore.setItemAsync('stockList', JSON.stringify(stocks)).then(() => {
-            console.log("SET ITEM: " + stocks)
-        })
+            console.log("Stocks: " + stocks)
+        });
 
 
 
