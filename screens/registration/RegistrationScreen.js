@@ -36,7 +36,7 @@ export default class RegistrationScreen extends Component {
       nameError: false,
       emailError: false,
       passwordError: false,
-      confirmPasswordError: true,
+      confirmPasswordError: false,
       nameErrorMessage: "",
       emailErrorMessage: "",
       passwordErrorMessage: "",
@@ -59,6 +59,7 @@ export default class RegistrationScreen extends Component {
       user.set("username", this.state.username);
       user.set("email", this.state.email);
       user.set("password", this.state.password);
+      user.set("confirmPassword", this.confirmPassword);
       let successfulLogin = false;
       await user
         .signUp()
@@ -127,33 +128,36 @@ export default class RegistrationScreen extends Component {
       nameErrorMessage = "Username cannot be blank";
     }else{
       this.setState({nameError: false});
+      nameErrorMessage = "";
     }
     if (!this.state.email.includes("@")){
       this.setState({emailError: true});
       emailErrorMessage = "Invalid email";
     }else{
       this.setState({emailError: false});
+      emailErrorMessage = "";
     }
-    if (!this.state.username){
-      this.setState({nameError: true});
-      nameErrorMessage = "Username cannot be blank";
-    }else{
-      this.setState({nameError: false});
-    }
-    charsNeeded = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])/;
-    if (!charsNeeded.test(this.state.password) ){
+    let num = /^(?=.*[0-9]+$)/;
+    let lower = /^[a-z]+$/;
+    let upper = /^[A-Z]+$/;
+    //&& !lower.test(this.state.password) && !upper.test(this.state.password)
+    if (!num.test(this.state.password)){
       this.setState({passwordError: true});
-      passwordErrorMessage = "Password must include 1 capital letter, lowercase, and number"
+      passwordErrorMessage = "Password must include a number";
+      console.log(this.state.password);
     }else{
       this.setState({passwordError: false});
+      passwordErrorMessage = "";
     }
-    if (this.state.confirmPassword && this.state.confirmPassword == this.state.password){
+    /*if (this.state.confirmPassword && this.state.confirmPassword == this.state.password){
       this.setState({confirmPasswordError: false});
+      passwordErrorMessage = "";
     }else{
       this.setState({confirmPasswordError: true});
       confirmPasswordErrorMessage = "Passwords must match";
-    }
-    if (nameErrorMessage || emailErrorMessage || passwordErrorMessage || confirmPasswordErrorMessage  ){
+      console.log(this.state.confirmPassword);
+    }*/
+    if (nameErrorMessage || emailErrorMessage || passwordErrorMessage || confirmPasswordErrorMessage){
       this.setState({nameErrorMessage, emailErrorMessage, passwordErrorMessage, confirmPasswordErrorMessage});
       return false;
     }
@@ -178,11 +182,13 @@ export default class RegistrationScreen extends Component {
             placeholder="Your username"
             autoCapitalize="none"
             onChangeText={(text) => {
-              this.setState({ username: text })
+              this.setState({ username: text });
               this.validate();
             }}
           />
-          <Text style = {styles.error}>{this.state.nameErrorMessage}</Text>
+          {this.state.nameError ? (
+            <Text style = {styles.error}>{this.state.nameErrorMessage}</Text>
+          ):null}
 
           <Text style={styles.setInfo}>Email</Text>
           <TextInput
@@ -190,11 +196,13 @@ export default class RegistrationScreen extends Component {
             placeholder="Your email"
             autoCapitalize="none"
             onChangeText={(text) => {
-              this.setState({ email: text })
+              this.setState({ email: text });
               this.validate();
             }}
           />
-          <Text style = {styles.error}>{this.state.emailErrorMessage}</Text>
+          {this.state.emailError ? (
+            <Text style = {styles.error}>{this.state.emailErrorMessage}</Text>
+          ):null}
 
           <Text style={styles.setInfo}>Password</Text>
           <TextInput
@@ -203,10 +211,13 @@ export default class RegistrationScreen extends Component {
             placeholder="Your password"
             autoCapitalize="none"
             onChangeText={(text) => {
-              this.setState({ password: text })
-              this.validate}}
+              this.setState({ password: text });
+              this.validate();
+            }}
           />
-          <Text style = {styles.error}>{this.state.passwordErrorMessage}</Text>
+          {this.state.passwordError ? (
+            <Text style = {styles.error}>{this.state.passwordErrorMessage}</Text>
+          ):null}
 
           <Text style={styles.setInfo}>Confirm Password</Text>
           <TextInput
@@ -215,10 +226,13 @@ export default class RegistrationScreen extends Component {
             placeholder="Your password"
             autoCapitalize="none"
             onChangeText={(text) => {
-              this.setState({ confirmPassword: text})
-              this.validate}}
+              this.setState({ confirmPassword: text});
+              this.validate();
+            }}
           />
-          <Text style = {styles.error}>{this.state.confirmPasswordErrorMessage}</Text>
+          {this.state.confirmPasswordError ? (
+            <Text style = {styles.error}>{this.state.confirmPasswordErrorMessage}</Text>
+          ):null}
 
           <TouchableOpacity
             style={styles.touchableButton}
