@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Component } from "react";
 import StockRow from "./StockRow";
+import * as SecureStore from "expo-secure-store";
 const screenHeight = Dimensions.get("window").height;
 
 export default class StockBoard extends Component {
@@ -29,14 +30,33 @@ export default class StockBoard extends Component {
       ],
       row: [],
       change: [],
+      cash: 0,
     };
   }
 
   async componentDidMount() {
     await this.getStarterStocks();
   }
-
+  async getCash() {
+    let tempCash;
+    let userId;
+    await SecureStore.getItemAsync("userId").then((id) => {
+      userId = JSON.parse(id);
+      console.log("userId: " + userId);
+    });
+    await SecureStore.getItemAsync("cash")
+      .then((storedCash) => {
+        tempCash = storedCash;
+        console.log("cash amount: " + tempCash);
+      })
+      .catch((error) => {
+        document.write(`Error retrieving cash.`);
+        console.error("Error retrieving cash", error);
+      });
+    this.setState({ cash: tempCash });
+  }
   async getStarterStocks() {
+
     //temporary row hold stock name, percent change, and current price
     const tempRow = [];
     for (const stock of this.state.stocks) {
@@ -60,6 +80,7 @@ export default class StockBoard extends Component {
           }
         );
     }
+    this.getCash();
     this.setState({
       row: tempRow,
     });
@@ -122,7 +143,10 @@ export default class StockBoard extends Component {
               <Text style={styles.cashLabel}>Cash:</Text>
             </View>
             <View>
-              <Text style={styles.cashValue}> $15,235.53</Text>
+              <Text style={styles.cashValue}> 
+              {" "}
+            ${Math.round(this.state.cash * 100) / 100}{" "}
+              </Text>
             </View>
           </View>
         </View>
