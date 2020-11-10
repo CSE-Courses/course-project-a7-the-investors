@@ -12,19 +12,68 @@ import Parse, { User } from "parse/react-native.js";
 import { getEmail, getID, getpasswd, getUserName } from "./Info";
 import * as SecureStore from "expo-secure-store";
 
+
 export default class ProfileScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       imageUrl: "",
-      submitUrl: ""
+      submitUrl: "",
+      date: ""
     };
   }
 
   async componentDidMount() {
     await this.getProfilePicture();
+    await this.getDate();
   }
 
+  async getDate(){
+    Parse.setAsyncStorage(AsyncStorage);
+    Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+    Parse.initialize(
+        "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
+        "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
+    );
+
+    let sessionToken;
+
+    SecureStore.getItemAsync("sessionToken").then((token) => {
+      sessionToken = token;
+      console.log("THIS IS THE TOKEN" + token);
+
+    });
+
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+
+    let creationDate;
+    await Parse.User.me(sessionToken)
+        .then((user) => {
+          const currentUser = Parse.User.current();
+
+          creationDate = JSON.stringify(currentUser.get('createdAt'));
+
+        })
+        .catch((error) => {
+          if (typeof document !== "undefined")
+            document.write(
+                `Error while logging in user: ${JSON.stringify(error)}`
+            );
+          console.error("Error while logging in user", error);
+        });
+
+    if (creationDate !== "") {
+      let strArray = creationDate.split("T");
+      let choppedDate = strArray[0];
+      choppedDate = choppedDate.slice(1,choppedDate.length);
+      this.setState({date: choppedDate})
+    }
+
+
+
+
+  }
 
   async getProfilePicture(){
     Parse.setAsyncStorage(AsyncStorage);
@@ -203,7 +252,7 @@ export default class ProfileScreen extends React.Component {
         <Text style={styles.text}>
           {"\n"}Email: {getID()}
         </Text>
-        <Text style={styles.text}>{"\n"}Member since 9/28/2020</Text>
+        <Text style={styles.text}>{"\n"}Member since {this.state.date}</Text>
 
         <TouchableOpacity
           onPress={() => this.delUser()}
