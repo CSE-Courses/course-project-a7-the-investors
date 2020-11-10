@@ -12,7 +12,7 @@ export default class SearchScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <AppHeader />
+        {/* <AppHeader /> */}
         <View style={styles.content}>
           <StockBoard navigation={this.props.navigation} />
         </View>
@@ -25,7 +25,7 @@ const styles = {
   container: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: "#889b73",
+    //backgroundColor: "#889b73",
   },
   content: {
     flex: 1,

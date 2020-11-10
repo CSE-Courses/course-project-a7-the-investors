@@ -67,7 +67,10 @@ export default class Leaderboard extends React.Component {
           if (user.get("cash") == undefined) {
             tempPair.push([user.get("username"), 0]);
           } else {
-            tempPair.push([user.get("username"), user.get("cash")]);
+            //round cash amount to 2 decimals
+            var round =
+              Math.round((user.get("cash") + Number.EPSILON) * 100) / 100;
+            tempPair.push([user.get("username"), round]);
           }
         },
         (error) => {
@@ -84,15 +87,15 @@ export default class Leaderboard extends React.Component {
       return b[1] - a[1];
     });
     //add place value for leaderboard row
-    for(var i = 0; i < tempPair.length; i++){
-      tempRowArray.push([i+1, tempPair[i][0], tempPair[i][1]]);
+    for (var i = 0; i < tempPair.length; i++) {
+      tempRowArray.push([i + 1, tempPair[i][0], tempPair[i][1]]);
     }
     this.setState({
       userRow: tempRowArray,
     });
     console.log("userRow: " + this.state.userRow);
   }
-  
+
   render() {
     return (
       <SafeAreaView style={styles.boardContainer}>
@@ -118,18 +121,14 @@ export default class Leaderboard extends React.Component {
 
 const styles = {
   boardContainer: {
-    //flex: 1,
     alignItems: "center",
-    marginTop: "3%",
-    height: "42%",
+    marginTop: "5%",
+    height: "70%",
     marginBottom: "10%",
   },
   board: {
     flex: 1,
     width: "95%",
-    shadowOpacity: 0.2,
-    shadowRadius: 1.3,
-    //elevation: 2,
     backgroundColor: "white",
     borderRadius: 10,
   },
@@ -144,11 +143,11 @@ const styles = {
     flex: 1,
     borderBottomWidth: 1,
     borderColor: "grey",
-    width: "95%",
+    width: "100%",
     alignSelf: "center",
+    backgroundColor: "#889b73",
   },
   bannerText: {
-    //backgroundColor: "grey",
     fontSize: 48,
     textAlign: "center",
   },

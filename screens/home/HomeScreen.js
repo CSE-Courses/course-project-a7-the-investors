@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, StyleSheet} from "react-native";
+import { View, StyleSheet } from "react-native";
 import LeaderBoard from "./LeaderBoard.js";
 import DisplayCash from "./DisplayCash.js";
 import Graph from "./Graph.js";
@@ -7,9 +7,9 @@ import Graph from "./Graph.js";
 export default class HomeScreen extends React.Component {
   render() {
     return (
-      <View style = {styles.container} >
+      <View style={styles.container}>
         <DisplayCash />
-        <Graph />
+        {/* <Graph /> */}
         <LeaderBoard />
       </View>
     );
@@ -18,6 +18,6 @@ export default class HomeScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-      //backgroundColor: "#889b73"
-  }
+    //backgroundColor: "#889b73"
+  },
 });

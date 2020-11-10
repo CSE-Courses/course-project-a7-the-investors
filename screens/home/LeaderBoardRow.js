@@ -33,6 +33,6 @@ const styles = {
   },
   textStyling: {
     fontSize: 20,
-    flex: 1,
+    //flex: 1,
   },
 };

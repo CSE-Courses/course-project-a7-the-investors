@@ -6,6 +6,7 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
+  SafeAreaView,
 } from "react-native";
 import { Component } from "react";
 import StockRow from "./StockRow";
@@ -97,9 +98,11 @@ export default class StockBoard extends Component {
             <Text style={styles.buttonWords}>VIEW</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.boardContainer}>
-          <View style={[styles.board, { height: screenHeight * 0.55 }]}>
-            <ScrollView>
+        <SafeAreaView style={styles.boardContainer}>
+            <ScrollView  style={styles.board}>
+              <View style={styles.banner}>
+                <Text style={styles.bannerText}>Stocks</Text>
+              </View>
               {this.state.row.map((list) => {
                 return (
                   <StockRow
@@ -112,8 +115,7 @@ export default class StockBoard extends Component {
                 );
               })}
             </ScrollView>
-          </View>
-        </View>
+        </SafeAreaView>
         <View>
           <View style={styles.cashContainer}>
             <View>
@@ -131,29 +133,23 @@ export default class StockBoard extends Component {
 
 const styles = {
   boardContainer: {
-    marginTop: 20,
     alignItems: "center",
+    marginTop: "5%",
+    height: "90%",
+    marginBottom: "10%",
+    width: "82%",
   },
   board: {
-    borderWidth: 3,
-    borderRadius: 3,
-    borderColor: "white",
-    scrollEnabled: true,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.3,
-    elevation: 2,
-  },
-  headers: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingRight: 25,
-    paddingLeft: 8,
+    width: "95%",
+    //shadowOpacity: 1,
+    //shadowRadius: 1,
+    backgroundColor: "white",
+    borderRadius: 10,
+  },
+  container: {
+    //marginTop: 10,
+    alignItems: "center",
   },
   cashContainer: {
     flex: 1,
@@ -161,14 +157,14 @@ const styles = {
     width: "75%",
     alignItems: "center",
     alignSelf: "center",
-    marginTop: 15,
+    //marginTop: "5%",
   },
   cashLabel: {
     fontSize: 16,
   },
   cashValue: {
     fontSize: 43,
-    color: "#05375a"
+    color: "#05375a",
   },
   container: {
     marginTop: 10,
@@ -201,5 +197,17 @@ const styles = {
   },
   row: {
     flexDirection: "row",
+  },
+  banner: {
+    flex: 1,
+    borderBottomWidth: 1,
+    borderColor: "grey",
+    width: "100%",
+    alignSelf: "center",
+    backgroundColor: "#889b73",
+  },
+  bannerText: {
+    fontSize: 48,
+    textAlign: "center",
   },
 };

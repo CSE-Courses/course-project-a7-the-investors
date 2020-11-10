@@ -13,21 +13,22 @@ export default class DisplayCash extends React.Component {
     await this.getCash();
   }
   async getCash() {
-    let cash;
+    let tempCash;
     let userId;
     await SecureStore.getItemAsync("userId").then((id) => {
       userId = JSON.parse(id);
       console.log("userId: " + userId);
     });
-    await SecureStore.getItemAsync("cash").then((storedCash) => {
-      cash = storedCash;
-      console.log("cash amount: " + cash);
-    })
-    .catch((error) => {
-      document.write(`Error retrieving cash.`);
-      console.error("Error retrieving cash", error);
-    });
-    this.setState({ cash: cash});
+    await SecureStore.getItemAsync("cash")
+      .then((storedCash) => {
+        tempCash = storedCash;
+        console.log("cash amount: " + tempCash);
+      })
+      .catch((error) => {
+        document.write(`Error retrieving cash.`);
+        console.error("Error retrieving cash", error);
+      });
+    this.setState({ cash: tempCash });
   }
 
   render() {
@@ -35,7 +36,10 @@ export default class DisplayCash extends React.Component {
       <SafeAreaView style={styles.boardContainer}>
         <View>
           <Text style={styles.cashLabel}>Cash:</Text>
-          <Text style={styles.cashValue}> ${this.state.cash} </Text>
+          <Text style={styles.cashValue}>
+            {" "}
+            ${Math.round(this.state.cash * 100) / 100}{" "}
+          </Text>
         </View>
       </SafeAreaView>
     );
@@ -46,6 +50,8 @@ const styles = StyleSheet.create({
   boardContainer: {
     marginTop: "10%",
     alignItems: "center",
+    //width: "90%",
+    height: "15%",
   },
   cashContainer: {
     flex: 1,
@@ -62,5 +68,8 @@ const styles = StyleSheet.create({
   cashValue: {
     fontSize: 60,
     color: "#05375a",
+    textAlign: "center",
+    width: "90%",
+    flex: 1,
   },
 });
