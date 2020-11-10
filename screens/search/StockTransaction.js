@@ -76,6 +76,12 @@ export default class StockTransaction extends Component {
             volumeCost: tempVolumeCost
         });
     }
+    setamt(amt){
+        this.setState({
+            
+            amountOfStockOwned: amt
+        })
+    }
     //if BorS is a 0 then sell 1 then buy
     async confirmStock(BorS) {
         const stockToBuy = this.props.route.params.stockName.toUpperCase();
@@ -124,10 +130,15 @@ export default class StockTransaction extends Component {
             ],
             { cancelable: false });
         } 
-        this.setState({
-            
-            amountOfStockOwned: this.stockArray[indexOfStock + 1]
-        })
+
+        let indexOfStock = this.stockArray.indexOf(this.props.route.params.stockName.toUpperCase());
+            console.log(indexOfStock);
+            if ( indexOfStock> -1) {
+                this.setamt(0);
+            }
+            else{
+                this.setamt(this.stockArray[indexOfStock + 1]);
+            }
 
         Parse.setAsyncStorage(AsyncStorage);
         Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
