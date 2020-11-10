@@ -113,7 +113,7 @@ export default class Login extends React.Component {
                         style={styles.textInput}
                         autoCapitalize="none"
                         onChangeText={(text) => this.setState({password: text})}
-
+                        secureTextEntry={true}
 
                     /><TouchableOpacity onPress={() => Alert.alert('Simple Button pressed')}
                                         style={styles.buttonForgot}>

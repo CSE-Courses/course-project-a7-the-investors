@@ -153,7 +153,6 @@ export default class Leaderboard extends React.Component {
           .then((res) => res.json())
           .then(
             (result) => {
-              console.log("hamburger    : "+ this.state.amounts[i],[i1]);
               portfolioTotal += result.c * this.state.amounts[i][i1] ;
             },
             (error) => {
