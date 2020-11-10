@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   AsyncStorage,
+  Alert,
 } from "react-native";
 import { Component } from "react";
 import StockBoard from "./StockBoard";
@@ -132,7 +133,7 @@ export default class StockTransaction extends Component {
       return;
     }
     //true = buy, false = sell
-    const stockToBuy = this.props.route.params.stockName;
+    const stockToBuy = this.props.route.params.stockName.toUpperCase();//this is to stop duplicate entries like aalp & AALP
     let indexOfStock = this.stockArray.indexOf(stockToBuy);
     let updatedCash = 0;
     //Make stock to buy negative in order to sell and check if they are selling a bound of what they own
@@ -152,12 +153,22 @@ export default class StockTransaction extends Component {
       console.log("SELLING STATE: " + this.state.amountOfStockTransaction);
       //If selling more than owned do nothing
     } else if (!buy) {
-      console.log("DO NOTHING");
+        Alert.alert("You Don't Own That Many Stocks",
+        "  ",
+        [
+          { text: "OK", onPress: () => console.log("so what")}
+        ],
+        { cancelable: false });
       return;
     }
     //If buying more than funds do nothing
     if (buy && this.state.volumeCost > this.state.cash) {
-      console.log("DO NOTHING");
+        Alert.alert("Sorry You Don't Have Enough Money",
+        "You may consider getting a day job",
+        [
+          { text: "OK", onPress: () => console.log("OK Pressed") }
+        ],
+        { cancelable: false });
       return;
     } else if (buy) {
       updatedCash = this.state.cash - parseFloat(this.state.volumeCost);
