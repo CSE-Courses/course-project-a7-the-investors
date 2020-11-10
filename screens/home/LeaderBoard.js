@@ -19,6 +19,7 @@ export default class Leaderboard extends React.Component {
       //needed for displaying leaderboard content
       usernames: [],
       portfolioValues: [],
+      usercash: [],
     };
   }
 
@@ -61,8 +62,10 @@ export default class Leaderboard extends React.Component {
   async getStocks() {
     const tempStocks = [];
     const tempAmounts = [];
+    const tempusrcash = [];
     //create array of usernames
     const tempUsers = [];
+    var noinvestments = 0;
     for (var i = 0; i < this.state.ids.length; i++) {
       //use query to find respective IDs information
       const query = new Parse.Query("User");
@@ -79,8 +82,11 @@ export default class Leaderboard extends React.Component {
             //console.log("this.stockArray.length: " + this.stockArray.length);
           } else {
             //handle no investments
+            noinvestments =1;
+           
           }
-
+          
+          
           const _tempStocks = [];
           const _tempAmounts = [];
           //go through array of stocks and amount of stock owned and seperate them into 2 different arrays
@@ -91,13 +97,23 @@ export default class Leaderboard extends React.Component {
               _tempAmounts.push(this.stockArray[i]);
             }
           }
-          tempStocks.push(_tempStocks);
-          tempAmounts.push(_tempAmounts);
-          console.log("STOCKS: " + _tempStocks);
-          console.log("AMOUNTS: " + _tempAmounts);
-
+          if(noinvestments == 0){
+            tempStocks.push(_tempStocks);
+            tempAmounts.push(_tempAmounts);
+            console.log("STOCKS: " + _tempStocks);
+            console.log("AMOUNTS: " + _tempAmounts);
+          }else{
+            tempStocks.push(0);
+            tempAmounts.push(0);
+          }
+         
+          
+          var t = user.get('cash');
+          tempusrcash.push( t);
           //creat array of usernames
           tempUsers.push(user.get("username"));
+          noinvestments = 0; 
+          
         },
         (error) => {
           if (typeof document !== "undefined")
@@ -106,12 +122,15 @@ export default class Leaderboard extends React.Component {
             );
           console.error("Error while fetching user", error);
         }
+        
       );
+
     }
     this.setState({
       stocks: tempStocks,
       amounts: tempAmounts,
       usernames: tempUsers,
+      usercash: tempusrcash,
     });
 
     //calculate monetary totals for every group of stocks
@@ -134,15 +153,16 @@ export default class Leaderboard extends React.Component {
           .then((res) => res.json())
           .then(
             (result) => {
-              portfolioTotal += result.c * this.state.amounts[i][i1];
+              console.log("hamburger    : "+ this.state.amounts[i],[i1]);
+              portfolioTotal += result.c * this.state.amounts[i][i1] ;
             },
             (error) => {
               console.log(error);
             }
           );
       }
-      tempPortfolioValues.push(portfolioTotal);
-      console.log("TOTAL " + (i + 1) + " is " + portfolioTotal);
+      tempPortfolioValues.push(portfolioTotal+ parseInt(this.state.usercash[i]));
+      console.log("TOTAL " + (i + 1) + " is " + portfolioTotal );
     }
     this.setState({
       portfolioValues: tempPortfolioValues,
@@ -179,6 +199,7 @@ export default class Leaderboard extends React.Component {
         <ScrollView style={styles.board}>
           <View style={styles.banner}>
             <Text style={styles.bannerText}>Leaderboard</Text>
+            <LeaderBoardRow key={'place'} place={'Place'} username={'Username'} cash={' NetWorth'} />
           </View>
           {this.state.userRow.map((list) => {
             return (
