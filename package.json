@@ -23,6 +23,8 @@
     "react-native-gesture-handler": "~1.7.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.3",
     "react-native-paper": "^4.2.0",
+    "react-native-password-strength-checker": "^1.0.13",
+    "react-native-password-strength-meter": "0.0.4",
     "react-native-reanimated": "~1.13.0",
     "react-native-safe-area-context": "3.1.4",
     "react-native-screens": "~2.10.1",

@@ -21,7 +21,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { Component } from "react";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import * as SecureStore from "expo-secure-store";
-
+import RNPasswordStrengthMeter from 'react-native-password-strength-meter';
 
 const widthfoot = Dimensions.get("window").width;
 
@@ -38,7 +38,7 @@ export default class RegistrationScreen extends Component {
       passwordError: "",
       passwordConfirmError: "",
     };
-  }ç
+  }
 
   async createAccount() {
     if (this.validate){
@@ -128,7 +128,7 @@ export default class RegistrationScreen extends Component {
       nameError = "Username cannot be blank";
     }
     charsNeeded = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/
-    if (!charsNeed.test(this.state.password) ){
+    if (!charsNeeded.test(this.state.password) ){
       passwordError = "Password must include 1 capital letter, lowercase, and number"
     }
     if (this.state.confirmPassword != this.state.password){
@@ -140,6 +140,17 @@ export default class RegistrationScreen extends Component {
     }
     return true;
   };
+
+  setBorderColor = () => {
+    charsNeeded = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/
+    if (!charsNeeded.test(this.state.password) ){
+      return 'red';
+    }else {
+      return '#EAFAF1';
+    }
+  }
+
+  bColor = this.setBorderColor;
 
   render() {
     return (
@@ -173,7 +184,15 @@ export default class RegistrationScreen extends Component {
 
           <Text style={styles.setInfo}>Password</Text>
           <TextInput
-            style={styles.input}
+            style={{
+              borderWidth: 3,
+              borderColor: this.bColor,
+              height: 40,
+              padding: 10,
+              marginHorizontal: 20,
+              color: "#05375a",
+              borderRadius: 5,
+            }}
             secureTextEntry={true}
             placeholder="Your password"
             autoCapitalize="none"
