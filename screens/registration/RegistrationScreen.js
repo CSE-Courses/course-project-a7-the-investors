@@ -33,10 +33,14 @@ export default class RegistrationScreen extends Component {
       email: "",
       password: "",
       confirmPassword: "",
-      nameError: "",
-      emailError: "",
-      passwordError: "",
-      passwordConfirmError: "",
+      nameError: false,
+      emailError: false,
+      passwordError: false,
+      confirmPasswordError: true,
+      nameErrorMessage: "",
+      emailErrorMessage: "",
+      passwordErrorMessage: "",
+      confirmPasswordErrorMessage: "",
     };
   }
 
@@ -114,43 +118,47 @@ export default class RegistrationScreen extends Component {
   }
 
   validate = () => {
-    let nameError = "";
-    let emailError = "";
-    let passwordError = "";
-    let passwordConfirmError = "";
+    let nameErrorMessage = "";
+    let emailErrorMessage = "";
+    let passwordErrorMessage = "";
+    let confirmPasswordErrorMessage = "";
     if (!this.state.username){
-      nameError = "Username cannot be blank";
+      this.setState({nameError: true});
+      nameErrorMessage = "Username cannot be blank";
+    }else{
+      this.setState({nameError: false});
     }
     if (!this.state.email.includes("@")){
-      emailError = "Invalid email";
+      this.setState({emailError: true});
+      emailErrorMessage = "Invalid email";
+    }else{
+      this.setState({emailError: false});
     }
     if (!this.state.username){
-      nameError = "Username cannot be blank";
+      this.setState({nameError: true});
+      nameErrorMessage = "Username cannot be blank";
+    }else{
+      this.setState({nameError: false});
     }
-    charsNeeded = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/
+    charsNeeded = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])/;
     if (!charsNeeded.test(this.state.password) ){
-      passwordError = "Password must include 1 capital letter, lowercase, and number"
+      this.setState({passwordError: true});
+      passwordErrorMessage = "Password must include 1 capital letter, lowercase, and number"
+    }else{
+      this.setState({passwordError: false});
     }
-    if (this.state.confirmPassword != this.state.password){
-      passwordConfirmError = "Passwords must match";
+    if (this.state.confirmPassword && this.state.confirmPassword == this.state.password){
+      this.setState({confirmPasswordError: false});
+    }else{
+      this.setState({confirmPasswordError: true});
+      confirmPasswordErrorMessage = "Passwords must match";
     }
-    if (nameError || emailError || passwordError || confirmPasswordError){
-      this.setState({nameError, emailError, passwordError, passwordConfirmError});
+    if (nameErrorMessage || emailErrorMessage || passwordErrorMessage || confirmPasswordErrorMessage  ){
+      this.setState({nameErrorMessage, emailErrorMessage, passwordErrorMessage, confirmPasswordErrorMessage});
       return false;
     }
     return true;
   };
-
-  setBorderColor = () => {
-    charsNeeded = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/
-    if (!charsNeeded.test(this.state.password) ){
-      return 'red';
-    }else {
-      return '#EAFAF1';
-    }
-  }
-
-  bColor = this.setBorderColor;
 
   render() {
     return (
@@ -166,49 +174,51 @@ export default class RegistrationScreen extends Component {
         <View style={styles.footer}>
           <Text style={styles.setInfo}>Username</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, this.state.nameError ? styles.errorBorder:null]}
             placeholder="Your username"
             autoCapitalize="none"
-            onChangeText={(text) => this.setState({ username: text })}
+            onChangeText={(text) => {
+              this.setState({ username: text })
+              this.validate();
+            }}
           />
-          <Text style = {styles.error}>{this.state.nameError}</Text>
+          <Text style = {styles.error}>{this.state.nameErrorMessage}</Text>
 
           <Text style={styles.setInfo}>Email</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, this.state.emailError ? styles.errorBorder:null]}
             placeholder="Your email"
             autoCapitalize="none"
-            onChangeText={(text) => this.setState({ email: text })}
+            onChangeText={(text) => {
+              this.setState({ email: text })
+              this.validate();
+            }}
           />
-          <Text style = {styles.error}>{this.state.emailError}</Text>
+          <Text style = {styles.error}>{this.state.emailErrorMessage}</Text>
 
           <Text style={styles.setInfo}>Password</Text>
           <TextInput
-            style={{
-              borderWidth: 3,
-              borderColor: this.bColor,
-              height: 40,
-              padding: 10,
-              marginHorizontal: 20,
-              color: "#05375a",
-              borderRadius: 5,
-            }}
+            style={[styles.input, this.state.passwordError ? styles.errorBorder:null]}
             secureTextEntry={true}
             placeholder="Your password"
             autoCapitalize="none"
-            onChangeText={(text) => this.setState({ password: text })}
+            onChangeText={(text) => {
+              this.setState({ password: text })
+              this.validate}}
           />
-          <Text style = {styles.error}>{this.state.passwordError}</Text>
+          <Text style = {styles.error}>{this.state.passwordErrorMessage}</Text>
 
           <Text style={styles.setInfo}>Confirm Password</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, this.state.confirmPasswordError ? styles.errorBorder:null]}
             secureTextEntry={true}
             placeholder="Your password"
             autoCapitalize="none"
-            onChangeText={(text) => this.setState({ confirmPassword: text})}
+            onChangeText={(text) => {
+              this.setState({ confirmPassword: text})
+              this.validate}}
           />
-          <Text style = {styles.error}>{this.state.passwordConfirmError}</Text>
+          <Text style = {styles.error}>{this.state.confirmPasswordErrorMessage}</Text>
 
           <TouchableOpacity
             style={styles.touchableButton}
@@ -251,6 +261,15 @@ styles = StyleSheet.create({
   input: {
     borderWidth: 3,
     borderColor: "#EAFAF1",
+    height: 40,
+    padding: 10,
+    marginHorizontal: 20,
+    color: "#05375a",
+    borderRadius: 5,
+  },
+  errorBorder:{
+    borderWidth: 3,
+    borderColor: "red",
     height: 40,
     padding: 10,
     marginHorizontal: 20,
