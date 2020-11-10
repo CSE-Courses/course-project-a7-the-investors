@@ -17,7 +17,7 @@ export default class ProfileScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      imageUrl: "",
+      imageUrl: "https://image.flaticon.com/icons/png/512/64/64495.png",
       submitUrl: "",
       date: "",
       user: "",

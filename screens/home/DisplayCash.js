@@ -9,9 +9,22 @@ export default class DisplayCash extends React.Component {
       cash: 0,
     };
   }
+
+
+
+  async _unsubscribe() {}
+
   async componentDidMount() {
     await this.getCash();
+    //Regather data when page is refreshed
+    this._unsubscribe = this.props.navigation.addListener("focus", () => {
+      this.getCash()
+    });
+    // do something
   }
+
+
+
   async getCash() {
     let tempCash;
     let userId;

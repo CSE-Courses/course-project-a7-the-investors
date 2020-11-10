@@ -22,7 +22,11 @@ export default class Login extends React.Component {
             password:''
         }
     }
-    
+
+    componentDidMount() {
+        AsyncStorage.clear();
+    }
+
     async login(){
         console.log("LOGGIN IN")
         Parse.setAsyncStorage(AsyncStorage);

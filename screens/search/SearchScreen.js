@@ -9,6 +9,10 @@ export default class SearchScreen extends Component {
     super(props);
   }
 
+
+
+
+
   render() {
     return (
       <View style={styles.container}>
@@ -20,6 +24,8 @@ export default class SearchScreen extends Component {
     );
   }
 }
+
+
 
 const styles = {
   container: {
