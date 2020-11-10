@@ -3,11 +3,19 @@ import {Alert, AsyncStorage, Dimensions, Image, SafeAreaView, StyleSheet, Text, 
 
 import * as SecureStore from 'expo-secure-store';
 import Login from "./screens/login/Login";
+
 import StartUpNavigation from "./navigation/StartUpNavigation";
 import {createStackNavigator} from "@react-navigation/stack";
 import {NavigationContainer} from "@react-navigation/native";
 import RegistrationScreen from "./screens/registration/RegistrationScreen";
 import TabNavigator from "./navigation/TabNavigator";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import SearchScreen from "./screens/search/SearchScreen";
+import HomeScreen from "./screens/home/HomeScreen";
+import PortfolioScreen from "./screens/portfolio/PortfolioScreen";
+import ProfileScreen from "./screens/profile/ProfileScreen";
+import StockTransaction from "./screens/search/StockTransaction";
 
 
 export default class App extends React.Component {
@@ -16,7 +24,7 @@ export default class App extends React.Component {
 
         super(props);
         this.changeLoginStatus = this.changeLoginStatus.bind(this)
-
+        this.rmLoginStatus = this.rmLoginStatus.bind(this);
         this.state = {
             loggedIn: false,
             session: 'ralkajsdf;alsdkfj',
@@ -34,10 +42,12 @@ export default class App extends React.Component {
         this.setState({loggedIn: true});
         console.log(this.state.loggedIn);
     }
-    rmLoginStatus(){
-        this.setState({loggedIn: true});
+
+    rmLoginStatus() {
+        this.setState({loggedIn: false});
         console.log(this.state.loggedIn);
     }
+
     isLoggedIn() {
         //const userID = SecureStore.getItem('userID');
         SecureStore.getItemAsync('session').then(sessionToken => {
@@ -48,6 +58,50 @@ export default class App extends React.Component {
         });
     }
 
+
+    tabNavigatorRender() {
+        const Tab = createBottomTabNavigator();
+
+        return (
+            <NavigationContainer>
+                <Tab.Navigator
+                    screenOptions={({route}) => ({
+                        tabBarIcon: ({color, size}) => {
+                            let iconName;
+
+                            if (route.name === 'Portfolio') {
+                                iconName = "folder"
+                            } else if (route.name === 'Profile') {
+                                iconName = "account"
+                            } else if (route.name === 'Search') {
+                                iconName = "magnify"
+                            } else if (route.name === 'Home') {
+                                iconName = "home"
+                            }
+
+                            // You can return any component that you like here!
+                            return <MaterialCommunityIcons name={iconName} color={color} size={size}/>;
+                        },
+                    })}
+                    tabBarOptions={{
+                        activeTintColor: 'tomato',
+                        inactiveTintColor: 'gray',
+                    }}>
+                    <Tab.Screen name="Search" component={SearchScreen}/>
+                    <Tab.Screen name="Home" component={HomeScreen}/>
+                    <Tab.Screen name="Portfolio" component={PortfolioScreen}/>
+                    <Tab.Screen name="Profile">
+                        {props => <ProfileScreen {...props} changeLoginStatus={this.rmLoginStatus}/>}
+                    </Tab.Screen>
+                    <Tab.Screen name={"StockTransaction"} component={StockTransaction}/>
+
+                </Tab.Navigator>
+
+            </NavigationContainer>
+        );
+    }
+
+
     loginAndRegistration() {
         const Stack = createStackNavigator();
 
@@ -56,11 +110,11 @@ export default class App extends React.Component {
             <NavigationContainer>
                 <Stack.Navigator>
                     <Stack.Screen name={'Login'}>
-                        {props => <Login {...props} changeLoginStatus={this.changeLoginStatus} />}
+                        {props => <Login {...props} changeLoginStatus={this.changeLoginStatus}/>}
                     </Stack.Screen>
 
-                    <Stack.Screen name={'Registration'} >
-                        {props => <RegistrationScreen {...props} changeLoginStatus={this.changeLoginStatus} />}
+                    <Stack.Screen name={'Registration'}>
+                        {props => <RegistrationScreen {...props} changeLoginStatus={this.changeLoginStatus}/>}
 
                     </Stack.Screen>
                 </Stack.Navigator>
@@ -70,15 +124,16 @@ export default class App extends React.Component {
 
     render() {
 
-
         if (!this.state.loggedIn) {
             return (this.loginAndRegistration());
         } else {
             return (<TabNavigator/>);
+
         }
 
     }
 };
+
 
 const widthfoot = Dimensions.get('window').width;
 

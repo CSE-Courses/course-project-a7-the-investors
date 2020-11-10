@@ -12,12 +12,127 @@ import Parse, { User } from "parse/react-native.js";
 import { getEmail, getID, getpasswd, getUserName } from "./Info";
 import * as SecureStore from "expo-secure-store";
 
+
 export default class ProfileScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      imageURL: "https://image.flaticon.com/icons/png/512/64/64495.png",
+      imageUrl: "https://image.flaticon.com/icons/png/512/64/64495.png",
+      submitUrl: "",
+      date: "",
+      user: "",
+      email: ""
     };
+  }
+
+  async componentDidMount() {
+    await this.getProfilePicture();
+    await this.getDate();
+  }
+
+  async getDate(){
+    Parse.setAsyncStorage(AsyncStorage);
+    Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+    Parse.initialize(
+        "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
+        "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
+    );
+
+    let sessionToken;
+
+    SecureStore.getItemAsync("sessionToken").then((token) => {
+      sessionToken = token;
+      console.log("THIS IS THE TOKEN" + token);
+
+    });
+
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+
+    let creationDate;
+    let username;
+    let userEmail;
+    await Parse.User.me(sessionToken)
+        .then((user) => {
+          const currentUser = Parse.User.current();
+
+          creationDate = JSON.stringify(currentUser.get('createdAt'));
+          username = currentUser.get('username');
+          userEmail = currentUser.get('email')
+        })
+        .catch((error) => {
+          if (typeof document !== "undefined")
+            document.write(
+                `Error while logging in user: ${JSON.stringify(error)}`
+            );
+          console.error("Error while logging in user", error);
+        });
+
+    if (creationDate !== undefined) {
+      let strArray = creationDate.split("T");
+      let choppedDate = strArray[0];
+      choppedDate = choppedDate.slice(1,choppedDate.length);
+      this.setState({date: choppedDate});
+    }
+    if(username !== undefined){
+      this.setState({user: username});
+    }
+    if(userEmail !== undefined){
+      this.setState({email: userEmail});
+    }
+
+
+
+  }
+
+  async getProfilePicture(){
+    Parse.setAsyncStorage(AsyncStorage);
+    Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+    Parse.initialize(
+        "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
+        "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
+    );
+
+    let sessionToken;
+
+    SecureStore.getItemAsync("sessionToken").then((token) => {
+      sessionToken = token;
+      console.log("THIS IS THE TOKEN" + token);
+
+    });
+
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+
+    let URL = '';
+    await Parse.User.me(sessionToken)
+        .then((user) => {
+          const currentUser = Parse.User.current();
+
+          console.log("LOOOGGGED" + currentUser.get('profilePictureUrl'));
+
+          URL = currentUser.get('profilePictureUrl');
+
+        })
+        .catch((error) => {
+          if (typeof document !== "undefined")
+            document.write(
+                `Error while logging in user: ${JSON.stringify(error)}`
+            );
+          console.error("Error while logging in user", error);
+        });
+
+    if (URL !== undefined || !URL.isEmpty) {
+      console.log("REACHED::: " + URL);
+      console.log("REACHED")
+
+
+      this.setState({imageUrl: URL})
+    }
+
+
+
+
   }
 
   async updateProfilePicture() {
@@ -41,7 +156,7 @@ export default class ProfileScreen extends React.Component {
     Parse.User.me(sessionToken)
       .then((user) => {
         const currentUser = Parse.User.current();
-        let URL = this.state.imageURL;
+        let URL = this.state.submitUrl;
         currentUser.set("profilePictureUrl", URL);
         user
           .save()
@@ -49,6 +164,7 @@ export default class ProfileScreen extends React.Component {
             if (typeof document !== "undefined")
               document.write(`Updated user: ${JSON.stringify(response)}`);
             console.log("Updated user", response);
+            this.setState({imageUrl: URL})
           })
           .catch((error) => {
             if (typeof document !== "undefined")
@@ -108,7 +224,7 @@ export default class ProfileScreen extends React.Component {
           if (typeof document !== "undefined")
             document.write(`Deleted user: ${JSON.stringify(response)}`);
           console.log("Deleted user", response);
-          avo();
+          //avo();
         },
         (error) => {
           if (typeof document !== "undefined")
@@ -124,28 +240,32 @@ export default class ProfileScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image style={styles.image} source={{ uri: this.state.imageURL }} />
+        <Image style={styles.image} source={{ uri: this.state.imageUrl }} />
         <TextInput
-          placeholder="Insert URL to change profile"
+
           autoCapitalize="none"
           style={{ height: 40, borderColor: "gray", borderWidth: 0 }}
-          onChangeText={(text) => this.setState({ imageURL: text })}
+          onChangeText={(text) => this.setState({ submitUrl: text })}
           // blurOnSubmit = {true}
           // clearTextOnFocus = {true}
-          onSubmitEditing={() => this.updateProfilePicture()}
-          value={""}
+          placeholder={"Input image url"}
         />
+        <TouchableOpacity
+            onPress={() => this.updateProfilePicture()}
+            style={styles.buttonSign}
+        >
+          <Text style={styles.buttonWords}>Update Profile picture</Text>
+        </TouchableOpacity>
         <Text style={styles.text}>
-          {"\n"} UserName: {getUserName()}
+          {"\n"} UserName: {this.state.user}
         </Text>
         <Text style={styles.text}>
-          {"\n"}Email: {getID()}
+          {"\n"}Email: {this.state.email}
         </Text>
-        <Text style={styles.text}>{"\n"}Member since 9/28/2020</Text>
-
+        <Text style={styles.text}>{"\n"}Member since {this.state.date}</Text>
         <TouchableOpacity
           onPress={() => this.delUser()}
-          style={styles.buttonSign}
+          style={styles.buttonDelete}
         >
           <Text style={styles.buttonWords}>Delete Account</Text>
         </TouchableOpacity>
@@ -157,7 +277,7 @@ export default class ProfileScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#889b73",
+    //backgroundColor: "#889b73",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -170,6 +290,15 @@ const styles = StyleSheet.create({
     height: 200,
   },
   buttonSign: {
+    elevation: 8,
+    backgroundColor: "#889b73",
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    // marginLeft: widthfoot / 2,
+    // marginTop: 20,
+  },
+  buttonDelete: {
     elevation: 8,
     backgroundColor: "#FF0000",
     borderRadius: 10,

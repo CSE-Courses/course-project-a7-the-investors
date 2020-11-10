@@ -1,13 +1,58 @@
 import * as React from "react";
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
+import * as SecureStore from "expo-secure-store";
 
 export default class DisplayCash extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      cash: 0,
+    };
+  }
+
+
+
+  async _unsubscribe() {}
+
+  async componentDidMount() {
+    await this.getCash();
+    //Regather data when page is refreshed
+    this._unsubscribe = this.props.navigation.addListener("focus", () => {
+      this.getCash()
+    });
+    // do something
+  }
+
+
+
+  async getCash() {
+    let tempCash;
+    let userId;
+    await SecureStore.getItemAsync("userId").then((id) => {
+      userId = JSON.parse(id);
+      console.log("userId: " + userId);
+    });
+    await SecureStore.getItemAsync("cash")
+      .then((storedCash) => {
+        tempCash = storedCash;
+        console.log("cash amount: " + tempCash);
+      })
+      .catch((error) => {
+        document.write(`Error retrieving cash.`);
+        console.error("Error retrieving cash", error);
+      });
+    this.setState({ cash: tempCash });
+  }
+
   render() {
     return (
       <SafeAreaView style={styles.boardContainer}>
         <View>
           <Text style={styles.cashLabel}>Cash:</Text>
-          <Text style={styles.cashValue}> $15,235.53</Text>
+          <Text style={styles.cashValue}>
+            {" "}
+            ${Math.round(this.state.cash * 100) / 100}{" "}
+          </Text>
         </View>
       </SafeAreaView>
     );
@@ -18,6 +63,8 @@ const styles = StyleSheet.create({
   boardContainer: {
     marginTop: "10%",
     alignItems: "center",
+    //width: "90%",
+    height: "15%",
   },
   cashContainer: {
     flex: 1,
@@ -33,6 +80,9 @@ const styles = StyleSheet.create({
   },
   cashValue: {
     fontSize: 60,
-    color: "#05375a"
+    color: "#05375a",
+    textAlign: "center",
+    width: "90%",
+    flex: 1,
   },
 });

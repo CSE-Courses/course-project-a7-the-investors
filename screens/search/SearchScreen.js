@@ -9,23 +9,29 @@ export default class SearchScreen extends Component {
     super(props);
   }
 
+
+
+
+
   render() {
     return (
       <View style={styles.container}>
-        <AppHeader />
+        {/* <AppHeader /> */}
         <View style={styles.content}>
-          <StockBoard />
+          <StockBoard navigation={this.props.navigation} />
         </View>
       </View>
     );
   }
 }
 
+
+
 const styles = {
   container: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: "#889b73",
+    //backgroundColor: "#889b73",
   },
   content: {
     flex: 1,

@@ -22,8 +22,13 @@ export default class Login extends React.Component {
             password:''
         }
     }
-    
+
+    componentDidMount() {
+        AsyncStorage.clear();
+    }
+
     async login(){
+        console.log("LOGGIN IN")
         Parse.setAsyncStorage(AsyncStorage);
         Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
         Parse.initialize(
@@ -33,6 +38,8 @@ export default class Login extends React.Component {
 
         let sessionToken;
         let userId;
+        let stocks;
+        let cash;
         await Parse.User.logIn(this.state.email,this.state.password).then((user) => {
             // Do stuff after successful login
             if (typeof document !== 'undefined') document.write(`Logged in user: ${JSON.stringify(user)}`);
@@ -42,26 +49,38 @@ export default class Login extends React.Component {
             setUserName(this.state.email);
             console.log(getUserName());
             setpass(this.state.password);
-            console.log(getpasswd());
             setEmail(Parse.User.current().id);
             userId = user.id;
-
+            stocks = user.get('stocks');
+            cash = user.get('cash')
 
         }).catch(error => {
             if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
             console.error('Error while logging in user', error);
         })
-        await SecureStore.setItemAsync('sessionToken', sessionToken).then(() => {
-            console.log("SET ITEM")
+        await SecureStore.setItemAsync('sessionToken', JSON.stringify(sessionToken)).then(() => {
+            console.log("SESSION TOKEN: " + sessionToken)
         })
 
-        await SecureStore.setItemAsync('userId', userId).then(() => {
-            console.log("SET ITEM")
+        await SecureStore.setItemAsync('userId', JSON.stringify(userId)).then(() => {
+            console.log("USERID: " + userId)
         })
 
-        SecureStore.getItemAsync('sessionToken').then(token => {
-            console.log("THIS IS THE TOKEN" + token);
+        await SecureStore.setItemAsync('cash', JSON.stringify(cash)).then(() => {
+            console.log("CASH:" + cash)
+        })
+
+        console.log("THIS IS STOCKS: ")
+        console.log(stocks)
+
+        if (stocks === undefined) {
+            stocks = [];
+        }
+
+        await SecureStore.setItemAsync('stockList', JSON.stringify(stocks)).then(() => {
+            console.log("Stocks: " + stocks)
         });
+
 
 
 
@@ -98,7 +117,7 @@ export default class Login extends React.Component {
                         style={styles.textInput}
                         autoCapitalize="none"
                         onChangeText={(text) => this.setState({password: text})}
-
+                        secureTextEntry={true}
 
                     /><TouchableOpacity onPress={() => Alert.alert('Simple Button pressed')}
                                         style={styles.buttonForgot}>
