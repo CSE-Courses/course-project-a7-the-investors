@@ -163,8 +163,9 @@ const styles = {
     flex: 1,
     borderBottomWidth: 1,
     borderColor: "grey",
-    width: "95%",
+    width: "100%",
     alignSelf: "center",
+    backgroundColor: "#889b73",
   },
   bannerText: {
     fontSize: 48,
