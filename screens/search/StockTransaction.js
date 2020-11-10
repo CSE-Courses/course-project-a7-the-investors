@@ -82,16 +82,40 @@ export default class StockTransaction extends Component {
             amountOfStockOwned: amt
         })
     }
+    setcash(amt){
+        this.setState({
+            
+            cash: amt
+        })
+    }
+    ckamt(){
+        if(this.state.cash < parseInt(this.state.volumeCost)){
+            Alert.alert("Sorry You Don't Have Enough Money",
+            "You may consider getting a day job",
+            [
+              
+              { text: "OK", onPress: () => console.log("OK Pressed") }
+            ],
+            { cancelable: false });
+            return false;
+        }
+        return true;
+    }
     //if BorS is a 0 then sell 1 then buy
     async confirmStock(BorS) {
         const stockToBuy = this.props.route.params.stockName.toUpperCase();
         let indexOfStock = this.stockArray.indexOf(stockToBuy);
+        let total =0;
         if (this.stockArray.includes(stockToBuy)) {
             if(BorS == 1){
-                if(this.state.cash >= parseInt(this.state.volumeCost)){
+                if(this.ckamt()){
+                    total = -parseInt(this.state.volumeCost);
                     this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) + parseInt(this.state.amountOfStock);
                 }
                 else{
+                    return;
+                }
+               /* else{
                     Alert.alert("Sorry You Don't Have Enough Money",
                     "You may consider getting a day job",
                     [
@@ -100,14 +124,16 @@ export default class StockTransaction extends Component {
                     ],
                     { cancelable: false });
                 }
+                */
                 
             }
             if(BorS == 0){
-                
-                if(this.stockArray[indexOfStock+1] <= this.state.amountOfStock){
+                console.log(this.stockArray[indexOfStock+1]);
+                if(this.stockArray[indexOfStock+1] >= this.state.amountOfStock){
+                    total = parseInt(this.state.volumeCost);
                     this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) - parseInt(this.state.amountOfStock);
                 }
-                if(this.stockArray[indexOfStock+1] > this.state.amountOfStock){
+                if(this.stockArray[indexOfStock+1] < this.state.amountOfStock){
                     
                     Alert.alert("You Don't Own That Many Stocks",
                     "  ",
@@ -116,25 +142,33 @@ export default class StockTransaction extends Component {
                       { text: "OK", onPress: () => console.log("so what")}
                     ],
                     { cancelable: false });
-                    
+                    return;
                 }
             }
         } else if(BorS==1){
+            if(this.ckamt()){
             this.stockArray.push(stockToBuy);
             this.stockArray.push(this.state.amountOfStock);
             indexOfStock = this.stockArray.length - 2;
+            total = -parseInt(this.state.volumeCost);
+            }
+            else{
+                return;
+            }
         }else{
             Alert.alert("You Don't Own This stock","  ",
             [
                { text: "OK", onPress: () => console.log("so what")}
             ],
             { cancelable: false });
+            return;
         } 
 
-        let indexOfStock = this.stockArray.indexOf(this.props.route.params.stockName.toUpperCase());
+         indexOfStock = this.stockArray.indexOf(this.props.route.params.stockName.toUpperCase());
             console.log(indexOfStock);
             if ( indexOfStock> -1) {
                 this.setamt(0);
+                this.setcash(parseInt(this.state.cash)+total);
             }
             else{
                 this.setamt(this.stockArray[indexOfStock + 1]);
@@ -161,6 +195,7 @@ export default class StockTransaction extends Component {
             .then((user) => {
                 const currentUser = Parse.User.current();
                 let ownedStocks = this.stockArray;
+                currentUser.set("cash", this.state.cash);
                 currentUser.set("stocks", ownedStocks);
                 user
                     .save()
@@ -191,6 +226,7 @@ export default class StockTransaction extends Component {
                     );
                 console.error("Error while logging in user", error);
             });
+
 
         await SecureStore.setItemAsync('stockList', JSON.stringify(this.stockArray)).then(() => {
             console.log("SET ITEM: " + this.stockArray)
