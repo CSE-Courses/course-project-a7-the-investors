@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, SafeAreaView, ScrollView } from "react-native";
 import LeaderBoardRow from "./LeaderBoardRow.js";
 import Parse from "parse/react-native.js";
 import { AsyncStorage } from "react-native";
+import { get } from "react-native/Libraries/Utilities/PixelRatio";
+import * as SecureStore from "expo-secure-store";
 
 export default class Leaderboard extends React.Component {
   constructor(props) {
@@ -11,6 +13,12 @@ export default class Leaderboard extends React.Component {
       ids: [],
       //for use in LeaderBoardRow
       userRow: [],
+      //needed for fetching users stocks
+      stocks: [],
+      amounts: [],
+      //needed for displaying leaderboard content
+      usernames: [],
+      portfolioValues: [],
     };
   }
 
@@ -40,8 +48,8 @@ export default class Leaderboard extends React.Component {
         //populate id array with... users...
         this.setState({ ids: results });
         console.log("ids: " + this.state.ids);
-        //run method to fetch users corresponding cash amount
-        this.getUsernameAndCash();
+        //run chain of methods to fetch stocks then calculate totals then load into leaderboard
+        this.getStocks();
       })
       .catch((error) => {
         if (typeof document !== "undefined")
@@ -50,28 +58,46 @@ export default class Leaderboard extends React.Component {
       });
   }
 
-  async getUsernameAndCash() {
-    const tempRowArray = [];
-    const tempPair = [];
-    //go through all unique IDs
+  async getStocks() {
+    const tempStocks = [];
+    const tempAmounts = [];
+    //create array of usernames
+    const tempUsers = [];
     for (var i = 0; i < this.state.ids.length; i++) {
       //use query to find respective IDs information
       const query = new Parse.Query("User");
       await query.get(this.state.ids[i]).then(
         (user) => {
           if (typeof document !== "undefined")
-            document.write(`User found: ${JSON.stringify(user.get("cash"))}`);
-          //console.log("User found", user.get("username"), user.get("cash"));
-
-          //create a pair of a username and its corresponding cash amount
-          if (user.get("cash") == undefined) {
-            tempPair.push([user.get("username"), 0]);
+            document.write(
+              `FOUND STOCK LIST: ${JSON.stringify(user.get("stocks"))}`
+            );
+          //need to check for undefined if user has no investments
+          if (JSON.stringify(user.get("stocks")) !== undefined) {
+            this.stockArray = JSON.parse(JSON.stringify(user.get("stocks")));
+            //console.log("FOUND STOCK LIST: " + this.stockArray);
+            //console.log("this.stockArray.length: " + this.stockArray.length);
           } else {
-            //round cash amount to 2 decimals
-            var round =
-              Math.round((user.get("cash") + Number.EPSILON) * 100) / 100;
-            tempPair.push([user.get("username"), round]);
+            //handle no investments
           }
+
+          const _tempStocks = [];
+          const _tempAmounts = [];
+          //go through array of stocks and amount of stock owned and seperate them into 2 different arrays
+          for (var i = 0; i < this.stockArray.length; i++) {
+            if (i % 2 === 0 && this.stockArray[i + 1] > 0) {
+              _tempStocks.push(this.stockArray[i]);
+            } else if (this.stockArray[i] > 0) {
+              _tempAmounts.push(this.stockArray[i]);
+            }
+          }
+          tempStocks.push(_tempStocks);
+          tempAmounts.push(_tempAmounts);
+          console.log("STOCKS: " + _tempStocks);
+          console.log("AMOUNTS: " + _tempAmounts);
+
+          //creat array of usernames
+          tempUsers.push(user.get("username"));
         },
         (error) => {
           if (typeof document !== "undefined")
@@ -82,10 +108,61 @@ export default class Leaderboard extends React.Component {
         }
       );
     }
-    //sort pairs in descending order for cash amounts
-    tempPair.sort(function (a, b) {
-      return b[1] - a[1];
+    this.setState({
+      stocks: tempStocks,
+      amounts: tempAmounts,
+      usernames: tempUsers,
     });
+
+    //calculate monetary totals for every group of stocks
+    await this.getPortfolioValue();
+  }
+
+  async getPortfolioValue() {
+    const tempPortfolioValues = [];
+    for (var i = 0; i < this.state.stocks.length; i++) {
+      //console.log("stock list " + (i+1) + ": " + this.state.stocks[i]);
+      //every individual stock
+      const portfolioTotal = 0;
+      for (var i1 = 0; i1 < this.state.stocks[i].length; i1++) {
+        //console.log("stock " + (i1+1) + ": " + this.state.stocks[i][i1]);
+        await fetch(
+          "https://finnhub.io/api/v1/quote?symbol=" +
+            this.state.stocks[i][i1] +
+            "&token=bu317jf48v6pqlhnrjog"
+        )
+          .then((res) => res.json())
+          .then(
+            (result) => {
+              portfolioTotal += result.c * this.state.amounts[i][i1];
+            },
+            (error) => {
+              console.log(error);
+            }
+          );
+      }
+      tempPortfolioValues.push(portfolioTotal);
+      console.log("TOTAL " + (i + 1) + " is " + portfolioTotal);
+    }
+    this.setState({
+      portfolioValues: tempPortfolioValues,
+    });
+    //create leaderboard rows
+    await this.createLeaderBoard();
+  }
+
+  async createLeaderBoard() {
+    const tempRowArray = [];
+    const tempPair = [];
+    //go through all unique IDs
+    for (var i = 0; i < this.state.ids.length; i++) {
+      //use query to find respective IDs information
+      tempPair.push([this.state.usernames[i], (Math.round(this.state.portfolioValues[i] + Number.EPSILON) * 100) / 100]);
+      //sort pairs in descending order of portfolio totals
+      tempPair.sort(function (a, b) {
+        return b[1] - a[1];
+      });
+    }
     //add place value for leaderboard row
     for (var i = 0; i < tempPair.length; i++) {
       tempRowArray.push([i + 1, tempPair[i][0], tempPair[i][1]]);
