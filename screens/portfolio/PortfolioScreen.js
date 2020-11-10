@@ -10,7 +10,7 @@ export default class PortfolioScreen extends Component {
       <View style={styles.container}>
         <AppHeader />
         <View style={styles.content}>
-          <PortfolioStockBoard />
+          <PortfolioStockBoard navigation={this.props.navigation} />
         </View>
       </View>
     );

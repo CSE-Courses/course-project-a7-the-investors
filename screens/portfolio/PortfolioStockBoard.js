@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Dimensions, Text, View, ScrollView, SafeAreaView } from "react-native";
+import { Dimensions, Text, View, ScrollView } from "react-native";
 import { Component } from "react";
 import PortfolioStockRow from "./PortfolioStockRow";
 import * as SecureStore from "expo-secure-store";
@@ -7,6 +7,7 @@ import * as SecureStore from "expo-secure-store";
 export default class PortFolioStockBoard extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       stocks: [],
       amounts: [],
@@ -18,8 +19,20 @@ export default class PortFolioStockBoard extends Component {
       portfolioTotal: 0,
     };
   }
+
+  async _unsubscribe() {}
+
   async componentDidMount() {
     await this.getStocks();
+    //Regather data when page is refreshed
+    this._unsubscribe = this.props.navigation.addListener("focus", () => {
+      console.log("REACHEDDDD");
+      this.setState({
+        portfolioTotal: 0,
+      });
+      this.getStocks();
+    });
+    // do something
   }
 
   async getStocks() {
@@ -30,13 +43,14 @@ export default class PortFolioStockBoard extends Component {
     });
     await SecureStore.getItemAsync("stockList").then((stocks) => {
       this.stockArray = JSON.parse(stocks);
+      console.log(stocks);
       const tempStocks = [];
       const tempAmounts = [];
       //go through array of stocks and amount of stock owned and seperate them into 2 different arrays
       for (var i = 0; i < this.stockArray.length; i++) {
-        if (i % 2 == 0) {
+        if (i % 2 === 0 && this.stockArray[i + 1] > 0) {
           tempStocks.push(this.stockArray[i]);
-        } else {
+        } else if (this.stockArray[i] > 0) {
           tempAmounts.push(this.stockArray[i]);
         }
       }
@@ -47,8 +61,9 @@ export default class PortFolioStockBoard extends Component {
     });
     console.log("STOCKS: " + this.state.stocks);
     console.log("AMOUNTS: " + this.state.amounts);
-    this.getStockPrice();
+    await this.getStockPrice();
   }
+
   async getStockPrice() {
     const tempPrices = [];
     const tempRow = [];
@@ -90,8 +105,8 @@ export default class PortFolioStockBoard extends Component {
     return (
       <View style={[styles.container, { height: screenHeight * 0.65 }]}>
         <View style={styles.boardContainer}>
-          <SafeAreaView style={[styles.board, { height: screenHeight * 0.6 }]}>
-            <ScrollView style={styles.board}>
+          <View style={[styles.board, { height: screenHeight * 0.6 }]}>
+            <ScrollView>
               <View style={styles.banner}>
                 <Text style={styles.bannerText}>Stock Portfolio</Text>
               </View>
@@ -107,7 +122,7 @@ export default class PortFolioStockBoard extends Component {
                 );
               })}
             </ScrollView>
-          </SafeAreaView>
+          </View>
         </View>
         <View>
           <View style={styles.cashContainer}>
@@ -138,17 +153,18 @@ const styles = {
   board: {
     flex: 1,
     width: "95%",
+    shadowOpacity: 0.2,
+    shadowRadius: 1.3,
+    //elevation: 2,
     backgroundColor: "white",
     borderRadius: 10,
-    //alignItems: "center",
   },
   banner: {
     flex: 1,
     borderBottomWidth: 1,
     borderColor: "grey",
-    width: "100%",
+    width: "95%",
     alignSelf: "center",
-    backgroundColor: "#889b73",
   },
   bannerText: {
     fontSize: 48,
