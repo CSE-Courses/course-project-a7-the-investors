@@ -138,13 +138,16 @@ export default class RegistrationScreen extends Component {
       emailErrorMessage = "";
     }
     let num = /^(?=.*[0-9]+$)/;
-    let lower = /^[a-z]+$/;
-    let upper = /^[A-Z]+$/;
+    let lower = /^(?=.[a-z]+$)/;
+    let upper = /^(?=.[A-Z]+$)/;
+    let charsNeeded = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])$/;
     //&& !lower.test(this.state.password) && !upper.test(this.state.password)
-    if (!num.test(this.state.password)){
+    //!num.test(this.state.password) && !lower.test(this.state.password) && !upper.test(this.state.password)
+    if (!this.state.password.match(num)){
       this.setState({passwordError: true});
       passwordErrorMessage = "Password must include a number";
       console.log(this.state.password);
+      console.log("bad password");
     }else{
       this.setState({passwordError: false});
       passwordErrorMessage = "";
@@ -157,8 +160,8 @@ export default class RegistrationScreen extends Component {
       confirmPasswordErrorMessage = "Passwords must match";
       console.log(this.state.confirmPassword);
     }*/
-    if (nameErrorMessage || emailErrorMessage || passwordErrorMessage || confirmPasswordErrorMessage){
-      this.setState({nameErrorMessage, emailErrorMessage, passwordErrorMessage, confirmPasswordErrorMessage});
+    if (nameErrorMessage || emailErrorMessage || passwordErrorMessage /*|| confirmPasswordErrorMessage*/){
+      this.setState({nameErrorMessage, emailErrorMessage, passwordErrorMessage, /*confirmPasswordErrorMessage*/});
       return false;
     }
     return true;
