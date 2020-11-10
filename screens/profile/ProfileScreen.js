@@ -19,7 +19,9 @@ export default class ProfileScreen extends React.Component {
     this.state = {
       imageUrl: "",
       submitUrl: "",
-      date: ""
+      date: "",
+      user: "",
+      email: ""
     };
   }
 
@@ -48,12 +50,15 @@ export default class ProfileScreen extends React.Component {
     const query = new Parse.Query(User);
 
     let creationDate;
+    let username;
+    let userEmail;
     await Parse.User.me(sessionToken)
         .then((user) => {
           const currentUser = Parse.User.current();
 
           creationDate = JSON.stringify(currentUser.get('createdAt'));
-
+          username = currentUser.get('username');
+          userEmail = currentUser.get('email')
         })
         .catch((error) => {
           if (typeof document !== "undefined")
@@ -63,13 +68,18 @@ export default class ProfileScreen extends React.Component {
           console.error("Error while logging in user", error);
         });
 
-    if (creationDate !== "") {
+    if (creationDate !== undefined) {
       let strArray = creationDate.split("T");
       let choppedDate = strArray[0];
       choppedDate = choppedDate.slice(1,choppedDate.length);
-      this.setState({date: choppedDate})
+      this.setState({date: choppedDate});
     }
-
+    if(username !== undefined){
+      this.setState({user: username});
+    }
+    if(userEmail !== undefined){
+      this.setState({email: userEmail});
+    }
 
 
 
@@ -247,13 +257,12 @@ export default class ProfileScreen extends React.Component {
           <Text style={styles.buttonWords}>Update Profile picture</Text>
         </TouchableOpacity>
         <Text style={styles.text}>
-          {"\n"} UserName: {getUserName()}
+          {"\n"} UserName: {this.state.user}
         </Text>
         <Text style={styles.text}>
-          {"\n"}Email: {getID()}
+          {"\n"}Email: {this.state.email}
         </Text>
         <Text style={styles.text}>{"\n"}Member since {this.state.date}</Text>
-
         <TouchableOpacity
           onPress={() => this.delUser()}
           style={styles.buttonDelete}
