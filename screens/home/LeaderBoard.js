@@ -82,11 +82,9 @@ export default class Leaderboard extends React.Component {
             //console.log("this.stockArray.length: " + this.stockArray.length);
           } else {
             //handle no investments
-            noinvestments =1;
-           
+            noinvestments = 1;
           }
-          
-          
+
           const _tempStocks = [];
           const _tempAmounts = [];
           //go through array of stocks and amount of stock owned and seperate them into 2 different arrays
@@ -97,23 +95,21 @@ export default class Leaderboard extends React.Component {
               _tempAmounts.push(this.stockArray[i]);
             }
           }
-          if(noinvestments == 0){
+          if (noinvestments == 0) {
             tempStocks.push(_tempStocks);
             tempAmounts.push(_tempAmounts);
             console.log("STOCKS: " + _tempStocks);
             console.log("AMOUNTS: " + _tempAmounts);
-          }else{
+          } else {
             tempStocks.push(0);
             tempAmounts.push(0);
           }
-         
-          
-          var t = user.get('cash');
-          tempusrcash.push( t);
+
+          var t = user.get("cash");
+          tempusrcash.push(t);
           //creat array of usernames
           tempUsers.push(user.get("username"));
-          noinvestments = 0; 
-          
+          noinvestments = 0;
         },
         (error) => {
           if (typeof document !== "undefined")
@@ -122,9 +118,7 @@ export default class Leaderboard extends React.Component {
             );
           console.error("Error while fetching user", error);
         }
-        
       );
-
     }
     this.setState({
       stocks: tempStocks,
@@ -153,15 +147,17 @@ export default class Leaderboard extends React.Component {
           .then((res) => res.json())
           .then(
             (result) => {
-              portfolioTotal += result.c * this.state.amounts[i][i1] ;
+              portfolioTotal += result.c * this.state.amounts[i][i1];
             },
             (error) => {
               console.log(error);
             }
           );
       }
-      tempPortfolioValues.push(portfolioTotal+ parseInt(this.state.usercash[i]));
-      console.log("TOTAL " + (i + 1) + " is " + portfolioTotal );
+      tempPortfolioValues.push(
+        portfolioTotal + parseInt(this.state.usercash[i])
+      );
+      console.log("TOTAL " + (i + 1) + " is " + portfolioTotal);
     }
     this.setState({
       portfolioValues: tempPortfolioValues,
@@ -176,7 +172,11 @@ export default class Leaderboard extends React.Component {
     //go through all unique IDs
     for (var i = 0; i < this.state.ids.length; i++) {
       //use query to find respective IDs information
-      tempPair.push([this.state.usernames[i], (Math.round(this.state.portfolioValues[i] + Number.EPSILON) * 100) / 100]);
+      tempPair.push([
+        this.state.usernames[i],
+        (Math.round(this.state.portfolioValues[i] + Number.EPSILON) * 100) /
+          100,
+      ]);
       //sort pairs in descending order of portfolio totals
       tempPair.sort(function (a, b) {
         return b[1] - a[1];
@@ -198,7 +198,7 @@ export default class Leaderboard extends React.Component {
         <ScrollView style={styles.board}>
           <View style={styles.banner}>
             <Text style={styles.bannerText}>Leaderboard</Text>
-            <LeaderBoardRow key={'place'} place={'Place'} username={'Username'} cash={' NetWorth'} />
+            {/* <LeaderBoardRow key={'place'} place={'Place'} username={'Username'} cash={' NetWorth'} /> */}
           </View>
           {this.state.userRow.map((list) => {
             return (
@@ -219,9 +219,9 @@ export default class Leaderboard extends React.Component {
 const styles = {
   boardContainer: {
     alignItems: "center",
-    marginTop: "5%",
+    marginTop: "15%",
     height: "70%",
-    marginBottom: "10%",
+    marginBottom: "5%",
   },
   board: {
     flex: 1,
@@ -243,6 +243,8 @@ const styles = {
     width: "100%",
     alignSelf: "center",
     backgroundColor: "#889b73",
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   bannerText: {
     fontSize: 48,

@@ -10,20 +10,16 @@ export default class DisplayCash extends React.Component {
     };
   }
 
-
-
   async _unsubscribe() {}
 
   async componentDidMount() {
     await this.getCash();
     //Regather data when page is refreshed
     this._unsubscribe = this.props.navigation.addListener("focus", () => {
-      this.getCash()
+      this.getCash();
     });
     // do something
   }
-
-
 
   async getCash() {
     let tempCash;
@@ -61,7 +57,7 @@ export default class DisplayCash extends React.Component {
 
 const styles = StyleSheet.create({
   boardContainer: {
-    marginTop: "10%",
+    //marginTop: "10%",
     alignItems: "center",
     //width: "90%",
     height: "15%",
