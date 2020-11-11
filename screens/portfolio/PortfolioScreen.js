@@ -8,7 +8,6 @@ export default class PortfolioScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <AppHeader />
         <View style={styles.content}>
           <PortfolioStockBoard navigation={this.props.navigation} />
         </View>

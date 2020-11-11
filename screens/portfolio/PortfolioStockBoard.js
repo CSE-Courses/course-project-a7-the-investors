@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Dimensions, Text, View, ScrollView } from "react-native";
+import { Dimensions, Text, View, ScrollView, SafeAreaView } from "react-native";
 import { Component } from "react";
 import PortfolioStockRow from "./PortfolioStockRow";
 import * as SecureStore from "expo-secure-store";
@@ -104,26 +104,24 @@ export default class PortFolioStockBoard extends Component {
     const screenHeight = Dimensions.get("window").height;
     return (
       <View style={[styles.container, { height: screenHeight * 0.65 }]}>
-        <View style={styles.boardContainer}>
-          <View style={[styles.board, { height: screenHeight * 0.6 }]}>
-            <ScrollView>
-              <View style={styles.banner}>
-                <Text style={styles.bannerText}>Stock Portfolio</Text>
-              </View>
-              {this.state.row.map((list) => {
-                return (
-                  <PortfolioStockRow
-                    key={list[0]}
-                    stock={list[0]}
-                    percentChange={list[1]}
-                    amount={list[2]}
-                    total={list[3]}
-                  />
-                );
-              })}
-            </ScrollView>
-          </View>
-        </View>
+        <SafeAreaView style={styles.boardContainer}>
+          <ScrollView style={styles.board}>
+            <View style={styles.banner}>
+              <Text style={styles.bannerText}>Stock Portfolio</Text>
+            </View>
+            {this.state.row.map((list) => {
+              return (
+                <PortfolioStockRow
+                  key={list[0]}
+                  stock={list[0]}
+                  percentChange={list[1]}
+                  amount={list[2]}
+                  total={list[3]}
+                />
+              );
+            })}
+          </ScrollView>
+        </SafeAreaView>
         <View>
           <View style={styles.cashContainer}>
             <View>
@@ -147,15 +145,15 @@ export default class PortFolioStockBoard extends Component {
 
 const styles = {
   boardContainer: {
-    marginTop: 20,
+    marginTop: "20%",
+    height: "95%",
     alignItems: "center",
+    marginBottom: "5%",
+    width: "90%",
   },
   board: {
     flex: 1,
     width: "95%",
-    shadowOpacity: 0.2,
-    shadowRadius: 1.3,
-    //elevation: 2,
     backgroundColor: "white",
     borderRadius: 10,
   },
@@ -166,6 +164,8 @@ const styles = {
     width: "100%",
     alignSelf: "center",
     backgroundColor: "#889b73",
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   bannerText: {
     fontSize: 48,
