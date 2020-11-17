@@ -18,8 +18,9 @@ export default class Login extends React.Component {
         super(props);
 
         this.state = {
-            email: '',
-            password:''
+            password:'',
+            username:'',
+            email:''
         }
     }
     
@@ -42,10 +43,13 @@ export default class Login extends React.Component {
             //console.log("TOKEN:   "  + user.get('sessionToken'))
             this.props.changeLoginStatus();
             sessionToken = user.get('sessionToken');
-            setUserName(this.state.email);
+            setUserName(this.state.username);
             console.log(getUserName());
             setpass(this.state.password);
-            setEmail(Parse.User.current().id);
+            const currentUser = Parse.User.current();
+            email = currentUser.get('email');
+            setEmail(this.state.email);
+            
             userId = user.id;
             stocks = user.get('stocks');
             cash = user.get('cash')
@@ -104,7 +108,7 @@ export default class Login extends React.Component {
                         placeholder="Your Username/Email"
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={(text) => this.setState({email: text})}
+                        onChangeText={(text) => this.setState({username: text})}
 
                     />
                     <Text style={styles.footerWords}>Password</Text>

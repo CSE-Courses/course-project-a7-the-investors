@@ -91,7 +91,8 @@ export default class RegistrationScreen extends Component {
             userId = user.id;
             setUserName(this.state.userName);
             setpass(this.state.pass);
-            setEmail(Parse.User.current().id);
+            //setEmail(Parse.User.current().id);
+            setEmail(this.state.email);
             this.props.changeLoginStatus();
           })
           .catch((error) => {
