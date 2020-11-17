@@ -11,6 +11,8 @@ import {
 import {Component} from "react";
 import StockRow from "./StockRow";
 import * as SecureStore from "expo-secure-store";
+import DropDownPicker from 'react-native-dropdown-picker';
+
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -32,6 +34,7 @@ export default class StockBoard extends Component {
             row: [],
             change: [],
             cash: 0,
+            timeFrame: 'Daily'
         };
     }
 
@@ -132,6 +135,23 @@ export default class StockBoard extends Component {
                     >
                         <Text style={styles.buttonWords}>VIEW</Text>
                     </TouchableOpacity>
+                    <DropDownPicker
+                        items={[
+                            {label: 'Daily', value: 'Daily'},
+                            {label: 'Weekly', value: 'Weekly'},
+                            {label: 'Monthly', value: 'Monthly'},
+                        ]}
+                        defaultValue={this.state.timeFrame}
+                        containerStyle={{height: 40}}
+                        style={{backgroundColor: '#fafafa'}}
+                        itemStyle={{
+                            justifyContent: 'flex-start'
+                        }}
+                        dropDownStyle={{backgroundColor: '#fafafa'}}
+                        onChangeItem={item => this.setState({
+                            timeFrame: item.value
+                        })}
+                    />
                 </View>
                 <SafeAreaView style={styles.boardContainer}>
                     <ScrollView style={styles.board}>
