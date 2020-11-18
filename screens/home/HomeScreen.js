@@ -1,22 +1,15 @@
 import * as React from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import LeaderBoard from "./LeaderBoard.js";
 import DisplayCash from "./DisplayCash.js";
-import Graph from "./Graph.js";
 
 export default class HomeScreen extends React.Component {
   render() {
     return (
-      <View style={styles.container}>
+      <View>
         <LeaderBoard />
         <DisplayCash navigation={this.props.navigation} />
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    //backgroundColor: "#889b73"
-  },
-});
