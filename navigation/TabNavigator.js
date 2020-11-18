@@ -10,7 +10,7 @@ import SearchScreen from "../screens/search/SearchScreen";
 import HomeScreen from "../screens/home/HomeScreen";
 import { Header } from "@react-navigation/stack";
 import StockTransaction from "../screens/search/StockTransaction";
-import Following from "../screens/follow/Following";
+import FollowingScreen from "../screens/follow/FollowingScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -44,7 +44,7 @@ export default function TabNavigator() {
               iconName = "magnify";
             } else if (route.name === "Home") {
               iconName = "home";
-            } else if (route.name === "Follow") {
+            } else if (route.name === "Following") {
               iconName = "human-male-female";
             }
 
@@ -66,7 +66,7 @@ export default function TabNavigator() {
         <Tab.Screen name="Search" component={SearchScreenNavigation} />
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Portfolio" component={PortfolioScreen} />
-        <Tab.Screen name="Follow" component={Following} />
+        <Tab.Screen name="Following" component={FollowingScreen} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
     </NavigationContainer>
