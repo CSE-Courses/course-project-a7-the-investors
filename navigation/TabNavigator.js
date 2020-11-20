@@ -11,7 +11,7 @@ import HomeScreen from "../screens/home/HomeScreen";
 import { Header } from "@react-navigation/stack";
 import StockTransaction from "../screens/search/StockTransaction";
 import FollowingScreen from "../screens/follow/FollowingScreen";
-
+import Edu from "../screens/education/Edu";
 const Tab = createBottomTabNavigator();
 
 const SettingsStack = createStackNavigator();
@@ -23,6 +23,11 @@ function SearchScreenNavigation() {
       <SettingsStack.Screen
         name="StockTransaction"
         component={StockTransaction}
+      />
+      
+      <SettingsStack.Screen
+        name="Education"
+        component={Edu}
       />
     </SettingsStack.Navigator>
   );

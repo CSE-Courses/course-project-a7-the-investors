@@ -110,24 +110,7 @@ export default class StockTransaction extends Component {
   }
 
   async confirmTransaction(buy) {
-    /*
-        if(BorS == 1){
-                        this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) + parseInt(this.state.amountOfStock);
-                    }
-                    if(BorS == 0){
-                        if(this.stockArray[indexOfStock+1] < this.state.amountOfStock){
-                            this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) - parseInt(this.state.amountOfStock);
-                        }
-                        if(this.stockArray[indexOfStock+1] = this.state.amountOfStock){
-                            this.stockArray.splice(indexOfStock,2);
-                        }
-                    }
-                } else if(BorS==1){
-                    this.stockArray.push(stockToBuy);
-                    this.stockArray.push(this.state.amountOfStock)
-                    indexOfStock = this.stockArray.length - 2;
-                }
-         */
+    
 
     if (this.state.amountOfStockTransaction < 0) {
       return;

@@ -269,6 +269,13 @@ export default class ProfileScreen extends React.Component {
         >
           <Text style={styles.buttonWords}>Delete Account</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+            onPress={() => this.props.navigation.navigate('Education')}
+           style = {styles.buttonSign}
+           >
+             <Text style={styles.buttonWords}>Stock Education</Text>
+           </TouchableOpacity>
+        
       </View>
     );
   }
@@ -295,6 +302,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 12,
+    marginBottom: 12
     // marginLeft: widthfoot / 2,
     // marginTop: 20,
   },
