@@ -237,6 +237,29 @@ export default class ProfileScreen extends React.Component {
     });
   }
 
+  resetAlert(){
+
+    Alert.alert(
+        "Reseting game",
+        "By clicking reset all investments will be deleted and balance will be set back to $100,000. \n" +
+        "Are you sure?",
+
+        [
+          {
+            text: "Reset",
+            onPress: () => console.log("Reset Game")
+          },
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel"
+          }
+          ],
+        { cancelable: false }
+    );
+
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -263,6 +286,16 @@ export default class ProfileScreen extends React.Component {
           {"\n"}Email: {this.state.email}
         </Text>
         <Text style={styles.text}>{"\n"}Member since {this.state.date}</Text>
+
+
+          <TouchableOpacity
+              onPress={() => this.resetAlert()}
+              style={styles.buttonDelete}
+          >
+              <Text style={styles.buttonWords}>Reset Account</Text>
+          </TouchableOpacity>
+
+
         <TouchableOpacity
           onPress={() => this.delUser()}
           style={styles.buttonDelete}
