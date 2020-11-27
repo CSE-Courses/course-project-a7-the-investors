@@ -81,6 +81,7 @@ export default class RegistrationScreen extends Component {
                 let userId;
                 let stocks;
                 let cash;
+                let following;
                 await Parse.User.logIn(this.state.email, this.state.password).then((user) => {
                     // Do stuff after successful login
                     if (typeof document !== 'undefined') document.write(`Logged in user: ${JSON.stringify(user)}`);
@@ -94,6 +95,7 @@ export default class RegistrationScreen extends Component {
                     userId = user.id;
                     stocks = user.get('stocks');
                     cash = user.get('cash')
+                    following = user.get('following');
 
                 }).catch(error => {
                     if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
@@ -117,12 +119,15 @@ export default class RegistrationScreen extends Component {
                 if (stocks === undefined) {
                     stocks = [];
                 }
-
+                if (following === undefined) {
+                    following = [];
+                }
                 await SecureStore.setItemAsync('stockList', JSON.stringify(stocks)).then(() => {
                     console.log("Stocks: " + stocks)
                 });
-
-
+                await SecureStore.setItemAsync('followingList', JSON.stringify(following)).then(() => {
+                    console.log("following: " + following)
+                });
             }
         }
     }
