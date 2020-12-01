@@ -13,7 +13,12 @@ import FollowBoardRow from "./FollowBoardRow.js";
 export default class FollowBoard extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { following: [], followRow: [] };
+    this.state = { 
+      following: [], 
+      followRow: [],
+      userToAdd: "",
+      listOfUsers: [],
+     };
   }
   async componentDidMount() {
     await this.getFollowing();
@@ -36,6 +41,71 @@ export default class FollowBoard extends React.Component {
       tempFollowRow.push([followAraray[i], 1]);
     }
     this.setState({ followRow: tempFollowRow });
+  }
+
+  async addFollower(){
+    if (this.state.listOfUsers){
+      //add this.state.userToAdd to following list in database
+    }
+  }
+
+  async showList() {
+    if (!this.state.listOfUsers){
+      return (
+        <View style={styles.listOfUsers}>
+          <Text> No users </Text>
+        </View>
+      );
+    }else{
+      //list first 5 users with first user being exact match
+      const limit = 5;
+      if (listOfUsers.length < 5){
+        limit = this.state.listOfUsers.length;
+      }
+      return (
+        <View style={styles.listofUsers}>
+          <Text> $this.state.userToAdd </Text>
+          {limit>2 ?(
+            <Text> $this.state.listOfUsers[1] </Text>
+          ):null}
+          {limit>3 ?(
+            <Text> $this.state.listOfUsers[2] </Text>
+          ):null}
+          {limit>4 ?(
+            <Text> $this.state.listOfUsers[3] </Text>
+          ):null}
+          {limit>5 ?(
+            <Text> $this.state.listOfUsers[4] </Text>
+          ):null}
+        </View>
+      );
+    }
+  }
+
+  async userList(){
+    /*
+    if (userToAdd.length == 1)
+      for (go through database){
+        if (userOfData.startsWith(this.state.userToAdd)){
+          if (exactMatch){
+            listofUsers.unshift(this.state.userToAdd)
+          }
+          else{
+            listOfUsers.push(userOfData);
+          }
+        }
+    }else{    //search through existing listOfUsers to narrow down instead of database
+      for (const u of this.state.listOfUsers)
+        if (u.startsWith(this.state.userToAdd)){
+          if (exactMatch){
+            listofUsers.unshift(this.state.userToAdd)
+          }
+          else{
+            listOfUsers.push(userOfData);
+          }
+        }
+    }
+    */
   }
 
   render() {
@@ -65,6 +135,7 @@ export default class FollowBoard extends React.Component {
               onChangeText={(text) => {
                 //funciton needed for follow
                 //this.setState({ following: [text] });
+                //this.setState({ userToAdd: text})
               }}
             ></TextInput>
             <TouchableOpacity
@@ -156,5 +227,12 @@ const styles = {
   bannerText: {
     fontSize: 48,
     textAlign: "center",
+  },
+  listOfUsers: {
+    flex: 1 / 2,
+    paddingTop: 50,
+    paddingBottom: 10,
+
+    alignItems: "center",
   },
 };
