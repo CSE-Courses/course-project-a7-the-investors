@@ -46,7 +46,58 @@ export default class FollowBoard extends React.Component {
   async addFollower(){
     if (this.state.listOfUsers){
       //add this.state.userToAdd to following list in database
-    }
+      Parse.setAsyncStorage(AsyncStorage);
+      Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+      Parse.initialize(
+        "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
+        "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
+      );
+
+      let sessionToken;
+
+      SecureStore.getItemAsync("sessionToken").then((token) => {
+        sessionToken = token;
+      });
+
+      const User = new Parse.User();
+      const query = new Parse.Query(User);
+
+      Parse.User.me(sessionToken)
+        .then((user) => {
+          const currentUser = Parse.User.current();
+          let addFollow = this.state.userToAdd;
+          let getFollows = currentUser.get("following");
+          currentUser.set("following", getFollows.concat([addFollow]));
+          user
+            .save()
+            .then((response) => {
+              if (typeof document !== "undefined")
+                document.write(`Updated user: ${JSON.stringify(response)}`);
+              console.log("Updated user", response);
+              //this.setState({userToAdd: URL})
+            })
+            .catch((error) => {
+              if (typeof document !== "undefined")
+                document.write(
+                  `Error while updating user: ${JSON.stringify(error)}`
+                );
+              console.error("Error while updating user", error);
+            });
+
+          if (typeof document !== "undefined")
+            document.write(
+              `Current logged in user: ${JSON.stringify(currentUser)}`
+            );
+          console.log("Current logged in user", currentUser);
+        })
+        .catch((error) => {
+          if (typeof document !== "undefined")
+            document.write(
+              `Error while logging in user: ${JSON.stringify(error)}`
+            );
+          console.error("Error while logging in user", error);
+        });
+      }
   }
 
   async showList() {
@@ -140,7 +191,7 @@ export default class FollowBoard extends React.Component {
             ></TextInput>
             <TouchableOpacity
               //function need
-              //onPress={() => this.getFollowing()}
+              onPress={() => this.getFollowing()}
               style={styles.buttonSign}
             >
               <Text style={styles.buttonWords}>ADD</Text>
