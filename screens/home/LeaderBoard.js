@@ -219,8 +219,8 @@ export default class Leaderboard extends React.Component {
 const styles = {
   boardContainer: {
     alignItems: "center",
-    marginTop: "15%",
-    height: "70%",
+    marginTop: "5%",
+    height: "65%",
     marginBottom: "5%",
   },
   board: {
