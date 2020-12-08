@@ -3,14 +3,18 @@ import { StyleSheet, Text, View, SafeAreaView, ScrollView } from "react-native";
 import LeaderBoardRow from "./LeaderBoardRow.js";
 import Parse from "parse/react-native.js";
 import { AsyncStorage } from "react-native";
-import { get } from "react-native/Libraries/Utilities/PixelRatio";
-import * as SecureStore from "expo-secure-store";
 
-export default class Leaderboard extends React.Component {
+import * as SecureStore from "expo-secure-store";
+//necessary import?
+//import AsyncStorage from "@react-native-community/async-storage";
+
+export default class LeaderboardFollowing extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       ids: [],
+      following: [],
+      newIds: [],
       //for use in LeaderBoardRow
       userRow: [],
       //needed for fetching users stocks
@@ -20,16 +24,15 @@ export default class Leaderboard extends React.Component {
       usernames: [],
       portfolioValues: [],
       usercash: [],
-
       myUsername: '',
     };
   }
 
   async componentDidMount() {
     await this.getMyUsername();
-    await this.loadLeaderBoard();
+    await this.getFollowing();
   }
-  
+
   async getMyUsername(){
     await SecureStore.getItemAsync("username").then((username) => {
       console.log("MY USERNAME " + username);
@@ -39,6 +42,28 @@ export default class Leaderboard extends React.Component {
     });
   }
 
+  //load from database
+  async getFollowing() {
+    const tempFollowing = [];
+
+    await SecureStore.getItemAsync("followingList")
+      .then((following) => {
+        tempFollowing.push(following);
+        console.log("following: " + following);
+      })
+      .catch((error) => {
+        console.error("Error retrieving followers", error);
+      });
+    //necessary
+    let followAraray = JSON.parse(tempFollowing);
+    
+    //temporarily add yourself to this follow array
+    followAraray.push(JSON.parse(this.state.myUsername));
+
+    this.setState({ following: followAraray });
+    console.log("following state: " + this.state.following);
+    this.loadLeaderBoard();
+  }
   async loadLeaderBoard() {
     Parse.setAsyncStorage(AsyncStorage);
     Parse.serverURL = "https://parseapi.back4app.com";
@@ -70,7 +95,7 @@ export default class Leaderboard extends React.Component {
         console.error("Error retrieving ids", error);
       });
   }
-
+  
   async getStocks() {
     const tempStocks = [];
     const tempAmounts = [];
@@ -84,45 +109,48 @@ export default class Leaderboard extends React.Component {
       const query = new Parse.Query("User");
       await query.get(this.state.ids[i]).then(
         (user) => {
-          if (typeof document !== "undefined")
-            document.write(
-              `FOUND STOCK LIST: ${JSON.stringify(user.get("stocks"))}`
-            );
-          //need to check for undefined if user has no investments
-          if (JSON.stringify(user.get("stocks")) !== undefined) {
-            stockArray = JSON.parse(JSON.stringify(user.get("stocks")));
-            //console.log("FOUND STOCK LIST: " + stockArray);
-            //console.log("stockArray.length: " + stockArray.length);
-          } else {
-            //handle no investments
-            noinvestments = 1;
-          }
-
-          const _tempStocks = [];
-          const _tempAmounts = [];
-          //go through array of stocks and amount of stock owned and seperate them into 2 different arrays
-          for (var i = 0; i < stockArray.length; i++) {
-            if (i % 2 === 0 && stockArray[i + 1] > 0) {
-              _tempStocks.push(stockArray[i]);
-            } else if (stockArray[i] > 0) {
-              _tempAmounts.push(stockArray[i]);
+          //*****CHECKS IF USER IS FOLLOWING*****
+          if (this.state.following.includes(user.get("username"))) {
+            if (typeof document !== "undefined")
+              document.write(
+                `FOUND STOCK LIST: ${JSON.stringify(user.get("stocks"))}`
+              );
+            //need to check for undefined if user has no investments
+            if (JSON.stringify(user.get("stocks")) !== undefined) {
+              stockArray = JSON.parse(JSON.stringify(user.get("stocks")));
+              //console.log("FOUND STOCK LIST: " + stockArray);
+              //console.log("stockArray.length: " + stockArray.length);
+            } else {
+              //handle no investments
+              noinvestments = 1;
             }
-          }
-          if (noinvestments == 0) {
-            tempStocks.push(_tempStocks);
-            tempAmounts.push(_tempAmounts);
-            console.log("STOCKS: " + _tempStocks);
-            console.log("AMOUNTS: " + _tempAmounts);
-          } else {
-            tempStocks.push(0);
-            tempAmounts.push(0);
-          }
 
-          var t = user.get("cash");
-          tempusrcash.push(t);
-          //creat array of usernames
-          tempUsers.push(user.get("username"));
-          noinvestments = 0;
+            const _tempStocks = [];
+            const _tempAmounts = [];
+            //go through array of stocks and amount of stock owned and seperate them into 2 different arrays
+            for (var i = 0; i < stockArray.length; i++) {
+              if (i % 2 === 0 && stockArray[i + 1] > 0) {
+                _tempStocks.push(stockArray[i]);
+              } else if (stockArray[i] > 0) {
+                _tempAmounts.push(stockArray[i]);
+              }
+            }
+            if (noinvestments == 0) {
+              tempStocks.push(_tempStocks);
+              tempAmounts.push(_tempAmounts);
+              console.log("STOCKS: " + _tempStocks);
+              console.log("AMOUNTS: " + _tempAmounts);
+            } else {
+              tempStocks.push(0);
+              tempAmounts.push(0);
+            }
+
+            var t = user.get("cash");
+            tempusrcash.push(t);
+            //creat array of usernames
+            tempUsers.push(user.get("username"));
+            noinvestments = 0;
+          }
         },
         (error) => {
           if (typeof document !== "undefined")
@@ -183,7 +211,7 @@ export default class Leaderboard extends React.Component {
     const tempRowArray = [];
     const tempPair = [];
     //go through all unique IDs
-    for (var i = 0; i < this.state.ids.length; i++) {
+    for (var i = 0; i < this.state.following.length; i++) {
       //use query to find respective IDs information
       tempPair.push([
         this.state.usernames[i],

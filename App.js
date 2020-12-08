@@ -17,7 +17,6 @@ import PortfolioScreen from "./screens/portfolio/PortfolioScreen";
 import ProfileScreen from "./screens/profile/ProfileScreen";
 import StockTransaction from "./screens/search/StockTransaction";
 
-
 export default class App extends React.Component {
 
     constructor(props) {
@@ -94,7 +93,7 @@ export default class App extends React.Component {
                         {props => <ProfileScreen {...props} changeLoginStatus={this.rmLoginStatus}/>}
                     </Tab.Screen>
                     <Tab.Screen name={"StockTransaction"} component={StockTransaction}/>
-
+                    
                 </Tab.Navigator>
 
             </NavigationContainer>

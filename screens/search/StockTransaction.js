@@ -93,41 +93,24 @@ export default class StockTransaction extends Component {
       return (
         <View style={styles.input}>
           <Text> INSUFFICIENT FUNDS</Text>
-          <Text> Cost of Volume: {this.state.volumeCost}</Text>
-          <Text> Cash: {this.state.cash}</Text>
-          <Text> Currently Own: {this.state.amountOfStockOwned}</Text>
+          <Text style={{fontSize: 20}}> Cost of Volume: {this.state.volumeCost}</Text>
+          <Text style={{fontSize: 20}}> Cash: {this.state.cash}</Text>
+          <Text style={{fontSize: 20}}> Currently Own: {this.state.amountOfStockOwned}</Text>
         </View>
       );
     } else {
       return (
         <View style={styles.input}>
-          <Text> Cost of Volume: {this.state.volumeCost}</Text>
-          <Text> Cash: {this.state.cash}</Text>
-          <Text> Currently Own: {this.state.amountOfStockOwned}</Text>
+          <Text style={{fontSize: 20}}> Cost of Volume: {this.state.volumeCost}</Text>
+          <Text style={{fontSize: 20}}> Cash: {this.state.cash}</Text>
+          <Text style={{fontSize: 20}}> Currently Own: {this.state.amountOfStockOwned}</Text>
         </View>
       );
     }
   }
 
   async confirmTransaction(buy) {
-    /*
-        if(BorS == 1){
-                        this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) + parseInt(this.state.amountOfStock);
-                    }
-                    if(BorS == 0){
-                        if(this.stockArray[indexOfStock+1] < this.state.amountOfStock){
-                            this.stockArray[indexOfStock + 1] = parseInt(this.stockArray[indexOfStock + 1]) - parseInt(this.state.amountOfStock);
-                        }
-                        if(this.stockArray[indexOfStock+1] = this.state.amountOfStock){
-                            this.stockArray.splice(indexOfStock,2);
-                        }
-                    }
-                } else if(BorS==1){
-                    this.stockArray.push(stockToBuy);
-                    this.stockArray.push(this.state.amountOfStock)
-                    indexOfStock = this.stockArray.length - 2;
-                }
-         */
+    
 
     if (this.state.amountOfStockTransaction < 0) {
       return;
@@ -148,7 +131,12 @@ export default class StockTransaction extends Component {
         amountOfStockTransaction: selling,
       });
       updatedCash = parseFloat(this.state.volumeCost) + this.state.cash;
-
+      Alert.alert("You just sold "+this.state.amountOfStockTransaction +" of "+stockToBuy,
+      "  ",
+      [
+        { text: "OK", onPress: () => console.log("so what")}
+      ],
+      { cancelable: false });
       console.log("SELLING : " + selling);
       console.log("SELLING STATE: " + this.state.amountOfStockTransaction);
       //If selling more than owned do nothing
@@ -172,6 +160,12 @@ export default class StockTransaction extends Component {
       return;
     } else if (buy) {
       updatedCash = this.state.cash - parseFloat(this.state.volumeCost);
+      Alert.alert("You just bought "+this.state.amountOfStockTransaction +" of "+stockToBuy,
+      "  ",
+      [
+        { text: "OK", onPress: () => console.log("so what")}
+      ],
+      { cancelable: false });
     }
 
     //If stock array includes array update value in place
@@ -324,13 +318,13 @@ export default class StockTransaction extends Component {
                 style={styles.buttonBuy}
                 onPress={() => this.confirmTransaction(true)}
               >
-                <Text>Buy</Text>
+                <Text style= {styles.buttonWords}>Buy</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.buttonSell}
                 onPress={() => this.confirmTransaction(false)}
               >
-                <Text>Sell</Text>
+                <Text style= {styles.buttonWords}>Sell</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -407,6 +401,13 @@ const styles = {
     paddingHorizontal: 12,
     marginTop: 20,
   },
+  buttonWords: {
+    fontSize: 18,
+    color: "#000000",
+    fontWeight: "bold",
+    alignSelf: "center",
+    textTransform: "uppercase",
+  },
   buttons: {
     flex: 1 / 4,
     flexDirection: "row",
@@ -415,7 +416,7 @@ const styles = {
     borderColor: "white",
     width: "95%",
     alignSelf: "center",
-    height: 20,
+    
     marginTop: 8,
     paddingHorizontal: 40,
     paddingBottom: 50,

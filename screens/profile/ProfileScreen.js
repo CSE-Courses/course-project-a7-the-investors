@@ -6,12 +6,12 @@ import {
   StyleSheet,
   Image,
   TextInput,
+  Alert,
 } from "react-native";
 import { AsyncStorage } from "react-native";
 import Parse, { User } from "parse/react-native.js";
 import { getEmail, getID, getpasswd, getUserName } from "./Info";
 import * as SecureStore from "expo-secure-store";
-
 
 export default class ProfileScreen extends React.Component {
   constructor(props) {
@@ -21,7 +21,7 @@ export default class ProfileScreen extends React.Component {
       submitUrl: "",
       date: "",
       user: "",
-      email: ""
+      email: "",
     };
   }
 
@@ -30,12 +30,12 @@ export default class ProfileScreen extends React.Component {
     await this.getDate();
   }
 
-  async getDate(){
+  async getDate() {
     Parse.setAsyncStorage(AsyncStorage);
     Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
     Parse.initialize(
-        "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
-        "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
+      "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
+      "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
     );
 
     let sessionToken;
@@ -43,7 +43,6 @@ export default class ProfileScreen extends React.Component {
     SecureStore.getItemAsync("sessionToken").then((token) => {
       sessionToken = token;
       console.log("THIS IS THE TOKEN" + token);
-
     });
 
     const User = new Parse.User();
@@ -53,44 +52,41 @@ export default class ProfileScreen extends React.Component {
     let username;
     let userEmail;
     await Parse.User.me(sessionToken)
-        .then((user) => {
-          const currentUser = Parse.User.current();
+      .then((user) => {
+        const currentUser = Parse.User.current();
 
-          creationDate = JSON.stringify(currentUser.get('createdAt'));
-          username = currentUser.get('username');
-          userEmail = currentUser.get('email')
-        })
-        .catch((error) => {
-          if (typeof document !== "undefined")
-            document.write(
-                `Error while logging in user: ${JSON.stringify(error)}`
-            );
-          console.error("Error while logging in user", error);
-        });
+        creationDate = JSON.stringify(currentUser.get("createdAt"));
+        username = currentUser.get("username");
+        userEmail = currentUser.get("email");
+      })
+      .catch((error) => {
+        if (typeof document !== "undefined")
+          document.write(
+            `Error while logging in user: ${JSON.stringify(error)}`
+          );
+        console.error("Error while logging in user", error);
+      });
 
     if (creationDate !== undefined) {
       let strArray = creationDate.split("T");
       let choppedDate = strArray[0];
-      choppedDate = choppedDate.slice(1,choppedDate.length);
-      this.setState({date: choppedDate});
+      choppedDate = choppedDate.slice(1, choppedDate.length);
+      this.setState({ date: choppedDate });
     }
-    if(username !== undefined){
-      this.setState({user: username});
+    if (username !== undefined) {
+      this.setState({ user: username });
     }
-    if(userEmail !== undefined){
-      this.setState({email: userEmail});
+    if (userEmail !== undefined) {
+      this.setState({ email: userEmail });
     }
-
-
-
   }
 
-  async getProfilePicture(){
+  async getProfilePicture() {
     Parse.setAsyncStorage(AsyncStorage);
     Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
     Parse.initialize(
-        "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
-        "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
+      "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
+      "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
     );
 
     let sessionToken;
@@ -98,41 +94,34 @@ export default class ProfileScreen extends React.Component {
     SecureStore.getItemAsync("sessionToken").then((token) => {
       sessionToken = token;
       console.log("THIS IS THE TOKEN" + token);
-
     });
 
     const User = new Parse.User();
     const query = new Parse.Query(User);
 
-    let URL = '';
+    let URL = "";
     await Parse.User.me(sessionToken)
-        .then((user) => {
-          const currentUser = Parse.User.current();
+      .then((user) => {
+        const currentUser = Parse.User.current();
 
-          console.log("LOOOGGGED" + currentUser.get('profilePictureUrl'));
+        console.log("LOOOGGGED" + currentUser.get("profilePictureUrl"));
 
-          URL = currentUser.get('profilePictureUrl');
-
-        })
-        .catch((error) => {
-          if (typeof document !== "undefined")
-            document.write(
-                `Error while logging in user: ${JSON.stringify(error)}`
-            );
-          console.error("Error while logging in user", error);
-        });
+        URL = currentUser.get("profilePictureUrl");
+      })
+      .catch((error) => {
+        if (typeof document !== "undefined")
+          document.write(
+            `Error while logging in user: ${JSON.stringify(error)}`
+          );
+        console.error("Error while logging in user", error);
+      });
 
     if (URL !== undefined || !URL.isEmpty) {
       console.log("REACHED::: " + URL);
-      console.log("REACHED")
+      console.log("REACHED");
 
-
-      this.setState({imageUrl: URL})
+      this.setState({ imageUrl: URL });
     }
-
-
-
-
   }
 
   async updateProfilePicture() {
@@ -164,7 +153,7 @@ export default class ProfileScreen extends React.Component {
             if (typeof document !== "undefined")
               document.write(`Updated user: ${JSON.stringify(response)}`);
             console.log("Updated user", response);
-            this.setState({imageUrl: URL})
+            this.setState({ imageUrl: URL });
           })
           .catch((error) => {
             if (typeof document !== "undefined")
@@ -237,12 +226,147 @@ export default class ProfileScreen extends React.Component {
     });
   }
 
+  async resetGameRemote() {
+    let emptyArray = [];
+    let startingCash = 100000;
+    Parse.setAsyncStorage(AsyncStorage);
+    Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+    Parse.initialize(
+      "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
+      "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
+    );
+
+    let sessionToken;
+
+    SecureStore.getItemAsync("sessionToken").then((token) => {
+      sessionToken = token;
+      console.log("THIS IS THE TOKEN" + token);
+    });
+
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+
+    Parse.User.me(sessionToken)
+      .then((user) => {
+        const currentUser = Parse.User.current();
+        currentUser.set("stocks", emptyArray);
+        currentUser.set("cash", startingCash);
+        user
+          .save()
+          .then((response) => {
+            if (typeof document !== "undefined")
+              document.write(`Updated user: ${JSON.stringify(response)}`);
+            console.log("Updated user", response);
+          })
+          .catch((error) => {
+            if (typeof document !== "undefined")
+              document.write(
+                `Error while updating user: ${JSON.stringify(error)}`
+              );
+            console.error("Error while updating user", error);
+          });
+
+        if (typeof document !== "undefined")
+          document.write(
+            `Current logged in user: ${JSON.stringify(currentUser)}`
+          );
+        console.log("Current logged in user", currentUser);
+      })
+      .catch((error) => {
+        if (typeof document !== "undefined")
+          document.write(
+            `Error while logging in user: ${JSON.stringify(error)}`
+          );
+        console.error("Error while logging in user", error);
+      });
+
+    await SecureStore.setItemAsync(
+      "stockList",
+      JSON.stringify(emptyArray)
+    ).then(() => {
+      console.log("Stocks: " + emptyArray);
+    });
+
+    await SecureStore.setItemAsync("cash", JSON.stringify(startingCash)).then(
+      () => {
+        console.log("CASH:" + startingCash);
+      }
+    );
+  }
+
+  resetAlert() {
+    Alert.alert(
+      "Reseting game",
+      "By clicking reset all investments will be deleted and balance will be set back to $100,000. \n" +
+        "Are you sure?",
+
+      [
+        {
+          text: "Reset",
+          onPress: () => this.resetGameRemote(),
+        },
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+      ],
+      { cancelable: false }
+    );
+  }
+  delUser() {
+    Parse.setAsyncStorage(AsyncStorage);
+    Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+    Parse.initialize(
+      "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
+      "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
+    );
+    const user = new Parse.User();
+
+    user
+      .logIn(getUserName(), getpasswd())
+      .then((user) => {
+        // Do stuff after successful login
+        if (typeof document !== "undefined")
+          document.write(`Logged in user: ${JSON.stringify(user)}`);
+        console.log("Logged in user", user);
+      })
+      .catch((error) => {
+        if (typeof document !== "undefined")
+          document.write(
+            `Error while logging in user: ${JSON.stringify(error)}`
+          );
+        console.error("Error while logging in user", error);
+      });
+
+    const query = new Parse.Query(user);
+
+    // Finds the user by its ID
+    query.get(getEmail()).then((user) => {
+      // Invokes the "destroy" method to delete the user
+      user.destroy().then(
+        (response) => {
+          if (typeof document !== "undefined")
+            document.write(`Deleted user: ${JSON.stringify(response)}`);
+          console.log("Deleted user", response);
+          //avo();
+        },
+        (error) => {
+          if (typeof document !== "undefined")
+            document.write(
+              `Error while deleting user: ${JSON.stringify(error)}`
+            );
+          console.error("Error while deleting user", error);
+        }
+      );
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <Image style={styles.image} source={{ uri: this.state.imageUrl }} />
         <TextInput
-
           autoCapitalize="none"
           style={{ height: 40, borderColor: "gray", borderWidth: 0 }}
           onChangeText={(text) => this.setState({ submitUrl: text })}
@@ -251,8 +375,8 @@ export default class ProfileScreen extends React.Component {
           placeholder={"Input image url"}
         />
         <TouchableOpacity
-            onPress={() => this.updateProfilePicture()}
-            style={styles.buttonSign}
+          onPress={() => this.updateProfilePicture()}
+          style={styles.buttonSign}
         >
           <Text style={styles.buttonWords}>Update Profile picture</Text>
         </TouchableOpacity>
@@ -262,12 +386,28 @@ export default class ProfileScreen extends React.Component {
         <Text style={styles.text}>
           {"\n"}Email: {this.state.email}
         </Text>
-        <Text style={styles.text}>{"\n"}Member since {this.state.date}</Text>
+        <Text style={styles.text}>
+          {"\n"}Member since {this.state.date}
+        </Text>
+
+        <TouchableOpacity
+          onPress={() => this.resetAlert()}
+          style={styles.buttonDelete}
+        >
+          <Text style={styles.buttonWords}>Reset Account</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           onPress={() => this.delUser()}
           style={styles.buttonDelete}
         >
           <Text style={styles.buttonWords}>Delete Account</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate("Education")}
+          style={styles.buttonSign}
+        >
+          <Text style={styles.buttonWords}>Stock Education</Text>
         </TouchableOpacity>
       </View>
     );
