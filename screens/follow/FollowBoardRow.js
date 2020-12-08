@@ -26,7 +26,7 @@ export default class FollowBoardRow extends React.Component {
         let sessionToken;
 
         SecureStore.getItemAsync("sessionToken").then((token) => {
-            sessionToken = token;
+            sessionToken = JSON.parse(token);
         });
 
         const User = new Parse.User();
@@ -43,11 +43,11 @@ export default class FollowBoardRow extends React.Component {
             .then((user) => {
                 const currentUser = Parse.User.current();
                 followList = currentUser.get('following');
-                //followIds = currentUser.get('followIds')
+                followIds = currentUser.get('followIds')
                 if (followList !== undefined) {
                     let idx = followList.indexOf(follow);
                     console.log(idx);
-                    if (idx != -1) {
+                    if (idx !== -1) {
                         followList.splice(idx, 1);
                         followIds.splice(idx, 1);
                         currentUser.set("following", followList);
