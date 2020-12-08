@@ -154,20 +154,20 @@ export default class RegistrationScreen extends Component {
             this.setState({nameError: false});
             nameErrorMessage = "";
         }
-        // if (!this.state.email.includes("@")){
-        //   this.setState({emailError: true});
-        //   emailErrorMessage = "Invalid email";
-        // }else{
-        //   this.setState({emailError: false});
-        //   emailErrorMessage = "";
-        // }
+        if (!this.state.email.includes("@")){
+          this.setState({emailError: true});
+          emailErrorMessage = "Invalid email";
+        }else{
+          this.setState({emailError: false});
+          emailErrorMessage = "";
+        }
         let num = /^(?=.*[0-9]+$)/;
         let lower = /^(?=.[a-z]+$)/;
         let upper = /^(?=.[A-Z]+$)/;
         let charsNeeded = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])$/;
         //&& !lower.test(this.state.password) && !upper.test(this.state.password)
         //!num.test(this.state.password) && !lower.test(this.state.password) && !upper.test(this.state.password)
-        if (!this.state.password.match(num)) {
+        if (!/\d/.test(this.state.password)) {
             this.setState({passwordError: true});
             passwordErrorMessage = "Password must include a number";
             console.log(this.state.password);
@@ -176,7 +176,7 @@ export default class RegistrationScreen extends Component {
             this.setState({passwordError: false});
             passwordErrorMessage = "";
         }
-        /*if (this.state.confirmPassword && this.state.confirmPassword == this.state.password){
+        /*if (this.state.confirmPassword && this.state.confirmPassword === this.state.password){
           this.setState({confirmPasswordError: false});
           passwordErrorMessage = "";
         }else{
