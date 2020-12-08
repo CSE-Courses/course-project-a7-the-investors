@@ -22,6 +22,7 @@ export default class FollowBoard extends React.Component {
       userToAdd: "",
       ids: [],
       usernames: [],
+      selfUsername: "",
      };
   }
   async componentDidMount() {
@@ -49,6 +50,7 @@ export default class FollowBoard extends React.Component {
         this.setState({ ids: results });
         console.log("ids: " + this.state.ids);
         this.usernameArray();
+        this.getMyUsername();
       })
       .catch((error) => {
         if (typeof document !== "undefined")
@@ -56,23 +58,37 @@ export default class FollowBoard extends React.Component {
         console.error("Error retrieving ids", error);
       });
 
-    const tempFollowing = [];
+    let tempFollowing = [];
     const tempFollowRow = [];
     await SecureStore.getItemAsync("followingList")
       .then((following) => {
-        tempFollowing.push(following);
-        console.log("following: " + following);
+        tempFollowing = JSON.parse(following);
+        //tempFollowing.push(following);
+        this.setState ({following: tempFollowing});
       })
       .catch((error) => {
         console.error("Error retrieving followers", error);
       });
+    // this.setState ({following: tempFollowing});
+    // console.log("List of following" + this.state.following);
     //for rows
-    let followArray = JSON.parse(tempFollowing);
-    for (var i = 0; i < followArray.length; i++) {
-      tempFollowRow.push([followArray[i], 1]);
+    for (var i = 0; i < tempFollowing.length; i++) {
+      tempFollowRow.push([tempFollowing[i], 1]);
     }
     this.setState({ followRow: tempFollowRow });
   }
+
+  async getMyUsername(){
+    let tempUsername = "";
+    await SecureStore.getItemAsync("username").then((username) => {
+      tempUsername = JSON.parse(username);
+      this.setState({
+        selfUsername: tempUsername,
+      });
+    });
+    console.log("my username is " + this.state.selfUsername);
+  }
+
 
   async usernameArray(){
     //get list of usernames
@@ -94,7 +110,7 @@ export default class FollowBoard extends React.Component {
       );
     }
     this.setState({usernames: tempUsers});
-    console.log("usernames: " + this.state.usernames);
+    //console.log("usernames: " + this.state.usernames);
   }
 
   async addFollower(){
@@ -123,7 +139,7 @@ export default class FollowBoard extends React.Component {
           .then((response) => {
             if (typeof document !== "undefined")
               document.write(`Updated user: ${JSON.stringify(response)}`);
-              console.log("Updated user", response);
+              //console.log("Updated user", response);
             //this.setState({userToAdd: URL})
           })
           .catch((error) => {
@@ -138,7 +154,7 @@ export default class FollowBoard extends React.Component {
           document.write(
             `Current logged in user: ${JSON.stringify(currentUser)}`
           );
-        console.log("Current logged in user", currentUser);
+        //console.log("Current logged in user", currentUser);
       })
       .catch((error) => {
         if (typeof document !== "undefined")
@@ -170,20 +186,20 @@ export default class FollowBoard extends React.Component {
         if (listOfUsers.length < 5){
           limit = listOfUsers.length;
         }
-        console.log(limit + " users");
+        //console.log(limit + " users");
         return (
           <View style={styles.listofUsers}>
             <Text> {listOfUsers[0]} </Text>
-            {limit>2 ?(
+            {limit>1 ?(
               <Text> {listOfUsers[1]} </Text>
             ):null}
-            {limit>3 ?(
+            {limit>2 ?(
               <Text> {listOfUsers[2]} </Text>
             ):null}
-            {limit>4 ?(
+            {limit>3 ?(
               <Text> {listOfUsers[3]} </Text>
             ):null}
-            {limit>5 ?(
+            {limit>4 ?(
               <Text> {listOfUsers[4]} </Text>
             ):null}
           </View>
@@ -195,22 +211,34 @@ export default class FollowBoard extends React.Component {
   async addButton(){
     var validId = this.state.usernames.includes(this.state.userToAdd);
     var notAlreadyFollowing = !this.state.following.includes(this.state.userToAdd);
-    if (validId && notAlreadyFollowing){  
+    var notSelf = (this.state.userToAdd != this.state.selfUsername)
+    if (validId && notAlreadyFollowing && notSelf){  
+      console.log("List of following is " + this.state.following);
       this.state.following.push(this.state.userToAdd);
+      console.log("List of following after push is " + this.state.following);
       this.addFollower();
       this.getFollowing();
     }else if(!notAlreadyFollowing){
-      Alert.alert("You already follow this user",
+      Alert.alert("You already follow this user","  ",
       [
         { text: "OK", onPress: () => console.log("OK Pressed") }
       ],
       { cancelable: false });
+      return;
+    }else if(!notSelf){
+      Alert.alert("You cannot follow yourself","  ",
+      [
+        { text: "OK", onPress: () => console.log("OK Pressed") }
+      ],
+      { cancelable: false });
+      return;
     }else{
-      Alert.alert("Not a valid user",
+      Alert.alert("Not a valid user","  ",
       [
         { text: "OK", onPress: () => console.log("OK Pressed") }
       ],
       { cancelable: false });
+      return;
     }
   }
 
@@ -227,6 +255,7 @@ export default class FollowBoard extends React.Component {
                 <FollowBoardRow
                   key={list[0]}
                   username={list[0]}
+                  money={list[1]}
                 />
               );
             })}
@@ -237,16 +266,14 @@ export default class FollowBoard extends React.Component {
           <TextInput
             style={styles.searchInput}
             placeholder={"follow..."}
+            autoCapitalize="none"
             onChangeText={(text) => {
               this.setState({ userToAdd: text});
             }}
           ></TextInput>
           <TouchableOpacity
-            onPress={() => {
-              this.addButton();
-            }
-            }
             style={styles.buttonSign}
+            onPress={() => this.addButton()}
           >
             <Text style={styles.buttonWords}>ADD</Text>
           </TouchableOpacity>
@@ -261,7 +288,7 @@ const styles = {
   boardContainer: {
     alignItems: "center",
     marginTop: "5%",
-    height: "70%",
+    height: 350,
     marginBottom: "5%",
     width: "95%",
   },
@@ -335,8 +362,8 @@ const styles = {
     textAlign: "center",
   },
   listOfUsers: {
-    flex: 1 / 2,
     paddingTop: 70,
     paddingBottom: 10,
+    fontSize: 14,
   }
 };
