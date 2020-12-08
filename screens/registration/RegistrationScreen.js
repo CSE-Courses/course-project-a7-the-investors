@@ -43,6 +43,10 @@ export default class RegistrationScreen extends Component {
         };
     }
 
+    componentDidMount() {
+        AsyncStorage.clear();
+    }
+
     async createAccount() {
         if (this.validate) {
             Parse.setAsyncStorage(AsyncStorage);
@@ -82,6 +86,7 @@ export default class RegistrationScreen extends Component {
                 let stocks;
                 let cash;
                 let following;
+                let followingIds;
                 await Parse.User.logIn(this.state.email, this.state.password).then((user) => {
                     // Do stuff after successful login
                     if (typeof document !== 'undefined') document.write(`Logged in user: ${JSON.stringify(user)}`);
@@ -96,6 +101,7 @@ export default class RegistrationScreen extends Component {
                     stocks = user.get('stocks');
                     cash = user.get('cash')
                     following = user.get('following');
+                    followingIds = user.get('followingIds');
 
                 }).catch(error => {
                     if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
@@ -121,6 +127,7 @@ export default class RegistrationScreen extends Component {
                 }
                 if (following === undefined) {
                     following = [];
+                    followingIds = [];
                 }
                 await SecureStore.setItemAsync('stockList', JSON.stringify(stocks)).then(() => {
                     console.log("Stocks: " + stocks)
@@ -128,6 +135,9 @@ export default class RegistrationScreen extends Component {
                 await SecureStore.setItemAsync('followingList', JSON.stringify(following)).then(() => {
                     console.log("following: " + following)
                 });
+
+                await SecureStore.setItemAsync('followingIds', JSON.stringify(followingIds)).then(() => {
+                })
             }
         }
     }

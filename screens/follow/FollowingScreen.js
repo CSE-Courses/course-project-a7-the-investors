@@ -6,7 +6,7 @@ export default class FollowingScreen extends React.Component {
   render() {
     return (
       <View>
-        <FollowBoard />
+        <FollowBoard navigation={this.props.navigation}/>
       </View>
     );
   }

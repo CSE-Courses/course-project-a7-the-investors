@@ -23,6 +23,7 @@ export default class FollowBoard extends React.Component {
       ids: [],
       usernames: [],
       selfUsername: "",
+      followingIds: ''
      };
   }
   async componentDidMount() {
@@ -69,11 +70,19 @@ export default class FollowBoard extends React.Component {
       .catch((error) => {
         console.error("Error retrieving followers", error);
       });
+    let tempIds =[];
+    await SecureStore.getItemAsync("followingIds").then((tfollowingIds) => {
+      tempIds = JSON.parse(tfollowingIds);
+      this.setState({
+        followingIds: tempIds,
+      });
+    });
+
     // this.setState ({following: tempFollowing});
     // console.log("List of following" + this.state.following);
     //for rows
     for (var i = 0; i < tempFollowing.length; i++) {
-      tempFollowRow.push([tempFollowing[i], 1]);
+      tempFollowRow.push([tempFollowing[i], this.state.followingIds[i]]);
     }
     this.setState({ followRow: tempFollowRow });
   }
@@ -133,7 +142,9 @@ export default class FollowBoard extends React.Component {
       .then((user) => {
         const currentUser = Parse.User.current();
         let followingList = this.state.following;
+        console.log("FOLLWING IDS: " + this.state.followingIds);
         currentUser.set("following", followingList);
+        currentUser.set('followingIds', this.state.followingIds)
         user
           .save()
           .then((response) => {
@@ -168,6 +179,11 @@ export default class FollowBoard extends React.Component {
         "followingList",
         JSON.stringify(this.state.following)
       );
+
+    await SecureStore.setItemAsync(
+        "followingIds",
+        JSON.stringify(this.state.followingIds)
+    );
   }
 
   showListRender() {
@@ -214,6 +230,8 @@ export default class FollowBoard extends React.Component {
     var notSelf = (this.state.userToAdd != this.state.selfUsername)
     if (validId && notAlreadyFollowing && notSelf){  
       console.log("List of following is " + this.state.following);
+      this.state.followingIds.push(this.state.ids[this.state.usernames.indexOf(this.state.userToAdd)]);
+
       this.state.following.push(this.state.userToAdd);
       console.log("List of following after push is " + this.state.following);
       this.addFollower();
@@ -252,11 +270,13 @@ export default class FollowBoard extends React.Component {
             </View>
             {this.state.followRow.map((list) => {
               return (
-                <FollowBoardRow
-                  key={list[0]}
-                  username={list[0]}
-                  money={list[1]}
-                />
+                  <FollowBoardRow
+                      key={list[0]}
+                      username={list[0]}
+                      money={list[1]}
+                      id={list[1]}
+                      navigation={this.props.navigation}
+                  />
               );
             })}
           </ScrollView>

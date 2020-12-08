@@ -41,6 +41,8 @@ export default class Login extends React.Component {
         let stocks;
         let cash;
         let following;
+        let followingIds;
+        let username;
         await Parse.User.logIn(this.state.email,this.state.password).then((user) => {
             // Do stuff after successful login
             if (typeof document !== 'undefined') document.write(`Logged in user: ${JSON.stringify(user)}`);
@@ -56,6 +58,7 @@ export default class Login extends React.Component {
             cash = user.get('cash')
             following = user.get('following');
             username = user.get('username');
+            followingIds = user.get('followingIds')
 
         }).catch(error => {
             if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
@@ -81,6 +84,7 @@ export default class Login extends React.Component {
         }
         if (following === undefined) {
             following = [];
+            followingIds = [];
         }
         await SecureStore.setItemAsync('stockList', JSON.stringify(stocks)).then(() => {
             console.log("Stocks: " + stocks)
@@ -89,6 +93,10 @@ export default class Login extends React.Component {
             console.log("following: " + following)
         });
         await SecureStore.setItemAsync('username', JSON.stringify(username)).then(() => {
+            console.log("username:" + username)
+        })
+
+        await SecureStore.setItemAsync('followingIds', JSON.stringify(followingIds)).then(() => {
             console.log("username:" + username)
         })
     }

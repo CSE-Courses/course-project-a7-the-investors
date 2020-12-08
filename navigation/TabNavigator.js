@@ -11,6 +11,8 @@ import HomeScreen from "../screens/home/HomeScreen";
 import { Header } from "@react-navigation/stack";
 import StockTransaction from "../screens/search/StockTransaction";
 import FollowingScreen from "../screens/follow/FollowingScreen";
+import FollowingPortfolio from "../screens/follow/FollowingPortfolio";
+
 
 const Tab = createBottomTabNavigator();
 
@@ -26,6 +28,16 @@ function SearchScreenNavigation() {
       />
     </SettingsStack.Navigator>
   );
+}
+
+function FollowerPortfolio() {
+    return (
+        <SettingsStack.Navigator>
+            <SettingsStack.Screen name="FollowBoard" component={FollowingScreen}/>
+            <SettingsStack.Screen name="FollowingPortfolio" component={FollowingPortfolio}/>
+
+        </SettingsStack.Navigator>
+    );
 }
 
 export default function TabNavigator() {
@@ -66,7 +78,7 @@ export default function TabNavigator() {
         <Tab.Screen name="Search" component={SearchScreenNavigation} />
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Portfolio" component={PortfolioScreen} />
-        <Tab.Screen name="Following" component={FollowingScreen} />
+        <Tab.Screen name="Following" component={FollowerPortfolio} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
     </NavigationContainer>
