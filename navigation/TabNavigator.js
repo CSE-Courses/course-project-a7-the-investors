@@ -15,7 +15,7 @@ import Edu from "../screens/education/Edu";
 const Tab = createBottomTabNavigator();
 
 const SettingsStack = createStackNavigator();
-
+const Portstack = createStackNavigator();
 function SearchScreenNavigation() {
   return (
     <SettingsStack.Navigator>
@@ -25,14 +25,22 @@ function SearchScreenNavigation() {
         component={StockTransaction}
       />
       
-      <SettingsStack.Screen
-        name="Education"
-        component={Edu}
-      />
+     
     </SettingsStack.Navigator>
   );
 }
+function Portstackr(){
+  return ( 
+    <Portstack.Navigator>
+       <Portstack.Screen name="Profile" component={ProfileScreen} />
+       <Portstack.Screen
+        name="Education"
+        component={Edu}
+      />
 
+    </Portstack.Navigator>
+  );
+}
 export default function TabNavigator() {
   return (
     <NavigationContainer>
@@ -72,7 +80,7 @@ export default function TabNavigator() {
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Portfolio" component={PortfolioScreen} />
         <Tab.Screen name="Following" component={FollowingScreen} />
-        <Tab.Screen name="Profile" component={ProfileScreen} />
+        <Tab.Screen name="Profile" component={Portstackr} />
       </Tab.Navigator>
     </NavigationContainer>
   );

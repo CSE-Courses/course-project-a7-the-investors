@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { Text, View, TouchableOpacity, StyleSheet, Linking, Dimensions } from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, Linking, Dimensions , ScrollView} from "react-native";
 import { Component } from "react";
 
 
@@ -11,6 +11,8 @@ export default class Edu extends React.Component {
 
   render() {
     return (
+<ScrollView >
+
 
       <View style={styles.container}>
 
@@ -65,9 +67,30 @@ export default class Edu extends React.Component {
         </Text>
         </View>
 
+        <View style={styles.headr}>
+          <Text style={styles.text}
+            onPress={() => Linking.openURL('https://www.morningstar.com/')}>
+            MorningStar
+       </Text>
+          <Text style={styles.description}>
+          Provides recommendations on how to select winning stocks.
+           How to invest like Warren Buffet and gives good information about funds. This includes there holdings, histories and current prices. 
+        </Text>
+        </View>
+        <View style={styles.headr}>
+          <Text style={styles.text}
+            onPress={() => Linking.openURL('https://simplywall.st/welcome')}>
+            Simplywall
+       </Text>
+          <Text style={styles.description}>
+          Gives you total analytics on many stocks.
+          Telling you what a fair price is, if it is oversold at the moment, or if there is insider trading.
+        </Text>
+        </View>
+
         
       </View>
-
+      </ScrollView>
 
 
     );
@@ -104,7 +127,7 @@ const styles = StyleSheet.create({
     flex: 1/2,
     alignSelf: "center",
     justifyContent: "center",
-    fontSize: 10,
+    fontSize: 13,
     margin: 24,
     color: "green",
   },
