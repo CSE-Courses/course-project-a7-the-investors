@@ -102,6 +102,7 @@ export default class LeaderboardFollowing extends React.Component {
     const tempusrcash = [];
     //create array of usernames
     const tempUsers = [];
+    let stockArray = [];
     var noinvestments = 0;
     for (var i = 0; i < this.state.ids.length; i++) {
       //use query to find respective IDs information
@@ -116,9 +117,9 @@ export default class LeaderboardFollowing extends React.Component {
               );
             //need to check for undefined if user has no investments
             if (JSON.stringify(user.get("stocks")) !== undefined) {
-              this.stockArray = JSON.parse(JSON.stringify(user.get("stocks")));
-              //console.log("FOUND STOCK LIST: " + this.stockArray);
-              //console.log("this.stockArray.length: " + this.stockArray.length);
+              stockArray = JSON.parse(JSON.stringify(user.get("stocks")));
+              //console.log("FOUND STOCK LIST: " + stockArray);
+              //console.log("stockArray.length: " + stockArray.length);
             } else {
               //handle no investments
               noinvestments = 1;
@@ -127,11 +128,11 @@ export default class LeaderboardFollowing extends React.Component {
             const _tempStocks = [];
             const _tempAmounts = [];
             //go through array of stocks and amount of stock owned and seperate them into 2 different arrays
-            for (var i = 0; i < this.stockArray.length; i++) {
-              if (i % 2 === 0 && this.stockArray[i + 1] > 0) {
-                _tempStocks.push(this.stockArray[i]);
-              } else if (this.stockArray[i] > 0) {
-                _tempAmounts.push(this.stockArray[i]);
+            for (var i = 0; i < stockArray.length; i++) {
+              if (i % 2 === 0 && stockArray[i + 1] > 0) {
+                _tempStocks.push(stockArray[i]);
+              } else if (stockArray[i] > 0) {
+                _tempAmounts.push(stockArray[i]);
               }
             }
             if (noinvestments == 0) {
