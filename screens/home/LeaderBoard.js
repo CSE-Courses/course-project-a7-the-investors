@@ -31,14 +31,12 @@ export default class Leaderboard extends React.Component {
   }
   
   async getMyUsername(){
-    let username;
     await SecureStore.getItemAsync("username").then((username) => {
       console.log("MY USERNAME " + username);
       this.setState({
         myUsername: username,
       });
     });
-    console.log("my username state " + this.state.myUsername);
   }
 
   async loadLeaderBoard() {

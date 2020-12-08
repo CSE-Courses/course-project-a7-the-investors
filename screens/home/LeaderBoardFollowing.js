@@ -24,12 +24,22 @@ export default class LeaderboardFollowing extends React.Component {
       usernames: [],
       portfolioValues: [],
       usercash: [],
+      myUsername: '',
     };
   }
 
   async componentDidMount() {
-    //await this.loadLeaderBoard();
+    await this.getMyUsername();
     await this.getFollowing();
+  }
+
+  async getMyUsername(){
+    await SecureStore.getItemAsync("username").then((username) => {
+      console.log("MY USERNAME " + username);
+      this.setState({
+        myUsername: username,
+      });
+    });
   }
 
   //load from database
@@ -46,6 +56,9 @@ export default class LeaderboardFollowing extends React.Component {
       });
     //necessary
     let followAraray = JSON.parse(tempFollowing);
+    
+    //temporarily add yourself to this follow array
+    followAraray.push(JSON.parse(this.state.myUsername));
 
     this.setState({ following: followAraray });
     console.log("following state: " + this.state.following);
@@ -95,7 +108,7 @@ export default class LeaderboardFollowing extends React.Component {
       const query = new Parse.Query("User");
       await query.get(this.state.ids[i]).then(
         (user) => {
-          //*****CHECKS IF USER IS FOLLOWING!*****
+          //*****CHECKS IF USER IS FOLLOWING*****
           if (this.state.following.includes(user.get("username"))) {
             if (typeof document !== "undefined")
               document.write(
@@ -234,6 +247,7 @@ export default class LeaderboardFollowing extends React.Component {
                 place={list[0]}
                 username={list[1]}
                 cash={list[2]}
+                myUsername={this.state.myUsername}
               />
             );
           })}
