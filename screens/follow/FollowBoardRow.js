@@ -38,16 +38,15 @@ export default class FollowBoardRow extends React.Component {
             followIds = JSON.parse(tfollowingIds);
         });
 
-
         await Parse.User.me(sessionToken)
             .then((user) => {
                 const currentUser = Parse.User.current();
                 followList = currentUser.get('following');
-                followIds = currentUser.get('followIds')
+                //followIds = currentUser.get('followIds')
                 if (followList !== undefined) {
                     let idx = followList.indexOf(follow);
                     console.log(idx);
-                    if (idx !== -1) {
+                    if (idx != -1) {
                         followList.splice(idx, 1);
                         followIds.splice(idx, 1);
                         currentUser.set("following", followList);
@@ -77,6 +76,20 @@ export default class FollowBoardRow extends React.Component {
                     );
                 console.error("Error while logging in user", error);
             });
+
+
+        await SecureStore.setItemAsync(
+            "followingList",
+            JSON.stringify(followList)
+        );
+
+        await SecureStore.setItemAsync(
+            "followingIds",
+            JSON.stringify(followIds)
+        );
+
+        this.props.updateParent();
+
 
 
     }

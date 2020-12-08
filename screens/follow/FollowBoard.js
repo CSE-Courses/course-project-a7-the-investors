@@ -23,11 +23,19 @@ export default class FollowBoard extends React.Component {
       ids: [],
       usernames: [],
       selfUsername: "",
-      followingIds: ''
+      followingIds: '',
+      updated: false
      };
+    this.updateParent = this.updateParent.bind(this);
   }
   async componentDidMount() {
     await this.getFollowing();
+  }
+
+  async updateParent(){
+    this.setState({updated: !this.state.updated})
+    console.log("UPDATED")
+    await this.getFollowing()
   }
 
   async getFollowing() {
@@ -276,6 +284,7 @@ export default class FollowBoard extends React.Component {
                       money={list[1]}
                       id={list[1]}
                       navigation={this.props.navigation}
+                      updateParent={this.updateParent}
                   />
               );
             })}
