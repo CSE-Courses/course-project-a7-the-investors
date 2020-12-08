@@ -22,6 +22,28 @@ export default class Login extends React.Component {
             password:''
         }
     }
+    forgoPasswd(){
+        if(this.state.email == ''){
+            return "please type the email associated with the accout you want to reset";
+        }
+        if(this.state.email.includes('@')){
+            Parse.setAsyncStorage(AsyncStorage);
+        Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
+        Parse.initialize(
+            'DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz', // This is your Application ID
+            '97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4' // This is your Javascript key
+        );
+        Parse.User.requestPasswordReset(this.state.email).then(() => {
+            // Password reset request was sent successfully
+            if (typeof document !== 'undefined') document.write('Reset password email sent successfully');
+            console.log('Reset password email sent successfully');
+          }).catch((error) => {
+            if (typeof document !== 'undefined') document.write(`Error while creating request to reset user password: ${JSON.stringify(error)}`);
+            console.error('Error while creating request to reset user password', error);
+          })
+        }
+        return "Email reset sent"
+    }
 
     componentDidMount() {
         AsyncStorage.clear();
@@ -134,7 +156,7 @@ export default class Login extends React.Component {
                         onChangeText={(text) => this.setState({password: text})}
                         secureTextEntry={true}
 
-                    /><TouchableOpacity onPress={() => Alert.alert('Simple Button pressed')}
+                    /><TouchableOpacity onPress={() => this.forgoPasswd()}
                                         style={styles.buttonForgot}>
                     <Text style={styles.forgotPass}>Forgot Password?</Text>
                 </TouchableOpacity>
