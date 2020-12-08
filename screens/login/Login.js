@@ -55,6 +55,7 @@ export default class Login extends React.Component {
             stocks = user.get('stocks');
             cash = user.get('cash')
             following = user.get('following');
+            username = user.get('username');
 
         }).catch(error => {
             if (typeof document !== 'undefined') document.write(`Error while logging in user: ${JSON.stringify(error)}`);
@@ -87,6 +88,9 @@ export default class Login extends React.Component {
         await SecureStore.setItemAsync('followingList', JSON.stringify(following)).then(() => {
             console.log("following: " + following)
         });
+        await SecureStore.setItemAsync('username', JSON.stringify(username)).then(() => {
+            console.log("username:" + username)
+        })
     }
 
 
