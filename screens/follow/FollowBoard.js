@@ -6,8 +6,11 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
+  AsyncStorage,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
+import Parse from "parse/react-native";
 import FollowBoardRow from "./FollowBoardRow.js";
 
 export default class FollowBoard extends React.Component {
@@ -17,7 +20,8 @@ export default class FollowBoard extends React.Component {
       following: [], 
       followRow: [],
       userToAdd: "",
-      listOfUsers: [],
+      ids: [],
+      usernames: [],
      };
   }
   async componentDidMount() {
@@ -25,6 +29,33 @@ export default class FollowBoard extends React.Component {
   }
 
   async getFollowing() {
+    Parse.setAsyncStorage(AsyncStorage);
+    Parse.serverURL = "https://parseapi.back4app.com";
+    Parse.initialize(
+      "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz",
+      "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4"
+    );
+    //need this key to fetch all users
+    Parse.masterKey = "kZuJip8wEQ3vxC0OUMFCV0JTk52jZbihe17V2bH9";
+    const idQuery = new Parse.Query("User");
+    //returns unique user ids
+    idQuery
+      .distinct("objectId")
+      .then((results) => {
+        if (typeof document !== "undefined")
+          document.write(`Unique ids: ${JSON.stringify(results)}`);
+        //console.log(`Unique ids: ${JSON.stringify(results)}`);
+        //populate id array with... users...
+        this.setState({ ids: results });
+        console.log("ids: " + this.state.ids);
+        this.usernameArray();
+      })
+      .catch((error) => {
+        if (typeof document !== "undefined")
+          document.write(`Error retrieving ids: ${JSON.stringify(error)}`);
+        console.error("Error retrieving ids", error);
+      });
+
     const tempFollowing = [];
     const tempFollowRow = [];
     await SecureStore.getItemAsync("followingList")
@@ -36,127 +67,151 @@ export default class FollowBoard extends React.Component {
         console.error("Error retrieving followers", error);
       });
     //for rows
-    let followAraray = JSON.parse(tempFollowing);
-    for (var i = 0; i < followAraray.length; i++) {
-      tempFollowRow.push([followAraray[i], 1]);
+    let followArray = JSON.parse(tempFollowing);
+    for (var i = 0; i < followArray.length; i++) {
+      tempFollowRow.push([followArray[i], 1]);
     }
     this.setState({ followRow: tempFollowRow });
   }
 
+  async usernameArray(){
+    //get list of usernames
+    const tempUsers = [];
+    for (var i = 0; i < this.state.ids.length; i++) {
+      const query = new Parse.Query("User");
+      await query.get(this.state.ids[i]).then(
+        (user) => {
+          //create array of usernames
+          tempUsers.push(user.get("username"));
+        },
+        (error) => {
+          if (typeof document !== "undefined")
+            document.write(
+              `Error while fetching user: ${JSON.stringify(error)}`
+            );
+          console.error("Error while fetching user", error);
+        }
+      );
+    }
+    this.setState({usernames: tempUsers});
+    console.log("usernames: " + this.state.usernames);
+  }
+
   async addFollower(){
-    if (this.state.listOfUsers){
-      //add this.state.userToAdd to following list in database
-      Parse.setAsyncStorage(AsyncStorage);
-      Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
-      Parse.initialize(
-        "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz", // This is your Application ID
-        "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4" // This is your Javascript key
-      );
+    Parse.setAsyncStorage(AsyncStorage);
+    Parse.serverURL = "https://parseapi.back4app.com";
+    Parse.initialize(
+      "DQkWjHzOqleUvvD7H4seMLVzihUkKAFvxmjXzEAz",
+      "97TLDTbw7uSO8KL3jcOIAUpK500K02bv7440VqV4"
+    );
+    let sessionToken;
 
-      let sessionToken;
+    SecureStore.getItemAsync("sessionToken").then((token) => {
+      sessionToken = token;
+    });
 
-      SecureStore.getItemAsync("sessionToken").then((token) => {
-        sessionToken = token;
-      });
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
 
-      const User = new Parse.User();
-      const query = new Parse.Query(User);
-
-      Parse.User.me(sessionToken)
-        .then((user) => {
-          const currentUser = Parse.User.current();
-          let addFollow = this.state.userToAdd;
-          let getFollows = currentUser.get("following");
-          currentUser.set("following", getFollows.concat([addFollow]));
-          user
-            .save()
-            .then((response) => {
-              if (typeof document !== "undefined")
-                document.write(`Updated user: ${JSON.stringify(response)}`);
+    Parse.User.me(sessionToken)
+      .then((user) => {
+        const currentUser = Parse.User.current();
+        let followingList = this.state.following;
+        currentUser.set("following", followingList);
+        user
+          .save()
+          .then((response) => {
+            if (typeof document !== "undefined")
+              document.write(`Updated user: ${JSON.stringify(response)}`);
               console.log("Updated user", response);
-              //this.setState({userToAdd: URL})
-            })
-            .catch((error) => {
-              if (typeof document !== "undefined")
-                document.write(
-                  `Error while updating user: ${JSON.stringify(error)}`
-                );
-              console.error("Error while updating user", error);
-            });
+            //this.setState({userToAdd: URL})
+          })
+          .catch((error) => {
+            if (typeof document !== "undefined")
+              document.write(
+                `Error while updating user: ${JSON.stringify(error)}`
+              );
+            console.error("Error while updating user", error);
+          });
 
-          if (typeof document !== "undefined")
-            document.write(
-              `Current logged in user: ${JSON.stringify(currentUser)}`
-            );
-          console.log("Current logged in user", currentUser);
-        })
-        .catch((error) => {
-          if (typeof document !== "undefined")
-            document.write(
-              `Error while logging in user: ${JSON.stringify(error)}`
-            );
-          console.error("Error while logging in user", error);
-        });
-      }
+        if (typeof document !== "undefined")
+          document.write(
+            `Current logged in user: ${JSON.stringify(currentUser)}`
+          );
+        console.log("Current logged in user", currentUser);
+      })
+      .catch((error) => {
+        if (typeof document !== "undefined")
+          document.write(
+            `Error while logging in user: ${JSON.stringify(error)}`
+          );
+        console.error("Error while logging in user", error);
+      });
+      
+      await SecureStore.setItemAsync(
+        "followingList",
+        JSON.stringify(this.state.following)
+      );
   }
 
-  async showList() {
-    if (!this.state.listOfUsers){
-      return (
-        <View style={styles.listOfUsers}>
-          <Text> No users </Text>
-        </View>
-      );
+  showListRender() {
+    console.log("User to add is " + this.state.userToAdd);
+    var listOfUsers = this.state.usernames.filter(s => s.includes(this.state.userToAdd));
+    console.log("ListOfUsers " + listOfUsers);
+    if (this.state.userToAdd){
+      if (listOfUsers){
+        //put exact match at the front of list
+        if (listOfUsers.includes(this.state.userToAdd)){
+          listOfUsers = listOfUsers.filter(item => item !== this.state.userToAdd);
+          listOfUsers.unshift(this.state.userToAdd);
+        }
+        //list first 5 users with first user being exact match
+        var limit = 5;
+        if (listOfUsers.length < 5){
+          limit = listOfUsers.length;
+        }
+        console.log(limit + " users");
+        return (
+          <View style={styles.listofUsers}>
+            <Text> {listOfUsers[0]} </Text>
+            {limit>2 ?(
+              <Text> {listOfUsers[1]} </Text>
+            ):null}
+            {limit>3 ?(
+              <Text> {listOfUsers[2]} </Text>
+            ):null}
+            {limit>4 ?(
+              <Text> {listOfUsers[3]} </Text>
+            ):null}
+            {limit>5 ?(
+              <Text> {listOfUsers[4]} </Text>
+            ):null}
+          </View>
+        );
+      }
+    }
+  }
+
+  async addButton(){
+    var validId = this.state.usernames.includes(this.state.userToAdd);
+    var notAlreadyFollowing = !this.state.following.includes(this.state.userToAdd);
+    if (validId && notAlreadyFollowing){  
+      this.state.following.push(this.state.userToAdd);
+      this.addFollower();
+      this.getFollowing();
+    }else if(!notAlreadyFollowing){
+      Alert.alert("You already follow this user",
+      [
+        { text: "OK", onPress: () => console.log("OK Pressed") }
+      ],
+      { cancelable: false });
     }else{
-      //list first 5 users with first user being exact match
-      const limit = 5;
-      if (listOfUsers.length < 5){
-        limit = this.state.listOfUsers.length;
-      }
-      return (
-        <View style={styles.listofUsers}>
-          <Text> $this.state.userToAdd </Text>
-          {limit>2 ?(
-            <Text> $this.state.listOfUsers[1] </Text>
-          ):null}
-          {limit>3 ?(
-            <Text> $this.state.listOfUsers[2] </Text>
-          ):null}
-          {limit>4 ?(
-            <Text> $this.state.listOfUsers[3] </Text>
-          ):null}
-          {limit>5 ?(
-            <Text> $this.state.listOfUsers[4] </Text>
-          ):null}
-        </View>
-      );
+      Alert.alert("Not a valid user",
+      [
+        { text: "OK", onPress: () => console.log("OK Pressed") }
+      ],
+      { cancelable: false });
     }
-  }
-
-  async userList(){
-    /*
-    if (userToAdd.length == 1)
-      for (go through database){
-        if (userOfData.startsWith(this.state.userToAdd)){
-          if (exactMatch){
-            listofUsers.unshift(this.state.userToAdd)
-          }
-          else{
-            listOfUsers.push(userOfData);
-          }
-        }
-    }else{    //search through existing listOfUsers to narrow down instead of database
-      for (const u of this.state.listOfUsers)
-        if (u.startsWith(this.state.userToAdd)){
-          if (exactMatch){
-            listofUsers.unshift(this.state.userToAdd)
-          }
-          else{
-            listOfUsers.push(userOfData);
-          }
-        }
-    }
-    */
   }
 
   render() {
@@ -172,31 +227,31 @@ export default class FollowBoard extends React.Component {
                 <FollowBoardRow
                   key={list[0]}
                   username={list[0]}
-                  money={list[1]}
                 />
               );
             })}
           </ScrollView>
         </View>
-          <View style={styles.row}>
-            {/* render new input as stock search */}
-            <TextInput
-              style={styles.searchInput}
-              placeholder={"follow..."}
-              onChangeText={(text) => {
-                //funciton needed for follow
-                //this.setState({ following: [text] });
-                //this.setState({ userToAdd: text})
-              }}
-            ></TextInput>
-            <TouchableOpacity
-              //function need
-              onPress={() => this.getFollowing()}
-              style={styles.buttonSign}
-            >
-              <Text style={styles.buttonWords}>ADD</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.row}>
+          {/* render new input as stock search */}
+          <TextInput
+            style={styles.searchInput}
+            placeholder={"follow..."}
+            onChangeText={(text) => {
+              this.setState({ userToAdd: text});
+            }}
+          ></TextInput>
+          <TouchableOpacity
+            onPress={() => {
+              this.addButton();
+            }
+            }
+            style={styles.buttonSign}
+          >
+            <Text style={styles.buttonWords}>ADD</Text>
+          </TouchableOpacity>
+        </View>
+        {this.showListRender()}
       </SafeAreaView>
     );
   }
@@ -281,9 +336,7 @@ const styles = {
   },
   listOfUsers: {
     flex: 1 / 2,
-    paddingTop: 50,
+    paddingTop: 70,
     paddingBottom: 10,
-
-    alignItems: "center",
-  },
+  }
 };
