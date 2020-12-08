@@ -20,11 +20,25 @@ export default class Leaderboard extends React.Component {
       usernames: [],
       portfolioValues: [],
       usercash: [],
+
+      myUsername: '',
     };
   }
 
   async componentDidMount() {
+    await this.getMyUsername();
     await this.loadLeaderBoard();
+  }
+  
+  async getMyUsername(){
+    let username;
+    await SecureStore.getItemAsync("username").then((username) => {
+      console.log("MY USERNAME " + username);
+      this.setState({
+        myUsername: username,
+      });
+    });
+    console.log("my username state " + this.state.myUsername);
   }
 
   async loadLeaderBoard() {
@@ -207,6 +221,7 @@ export default class Leaderboard extends React.Component {
                 place={list[0]}
                 username={list[1]}
                 cash={list[2]}
+                myUsername={this.state.myUsername}
               />
             );
           })}

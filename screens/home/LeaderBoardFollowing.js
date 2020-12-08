@@ -82,32 +82,7 @@ export default class LeaderboardFollowing extends React.Component {
         console.error("Error retrieving ids", error);
       });
   }
-  async filterIds() {
-    const tempNewIds = [];
-    for (var i = 0; i < this.state.ids.length; i++) {
-      //use query to find respective IDs information
-      const query = new Parse.Query("User");
-      await query.get(this.state.ids[i]).then(
-        (user) => {
-          if (this.state.following.includes(user.get("username"))) {
-            tempNewIds.push(this.state.ids[i]);
-            console.log("THIS ONE");
-          }
-        },
-        (error) => {
-          if (typeof document !== "undefined")
-            document.write(
-              `Error while fetching user: ${JSON.stringify(error)}`
-            );
-          console.error("Error while fetching user", error);
-        }
-      );
-    }
-    this.setState({ newIds: tempNewIds });
-
-    //this.getStocks();
-  }
-
+  
   async getStocks() {
     const tempStocks = [];
     const tempAmounts = [];
@@ -120,7 +95,7 @@ export default class LeaderboardFollowing extends React.Component {
       const query = new Parse.Query("User");
       await query.get(this.state.ids[i]).then(
         (user) => {
-          //CHECKS IF USER IS FOLLOWING!*****
+          //*****CHECKS IF USER IS FOLLOWING!*****
           if (this.state.following.includes(user.get("username"))) {
             if (typeof document !== "undefined")
               document.write(
